@@ -16,11 +16,11 @@ class Person
         void setLevel(std::string newLevel);
         int getId();
         void setId(int newId);
+        std::string toString();
     private:
         int id;
         std::string level;
         std::string name;      
-        bool isPositiveNum(int i );
         bool isvalidString(std::string str); 
 };
 
