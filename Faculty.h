@@ -11,7 +11,15 @@ class Faculty : public Person
         Faculty(int newId);
         Faculty(int newId, std::string newName);
         Faculty(int newId, std::string newName, std::string newLevel);
-
+        Faculty(int newId, std::string newName, std::string newLevel, std::string newDepartment);
+        ~Faculty();
+        std::string getDepartment();
+        void setDepartment(std::string newDepartment);
+        void addAdvisee(int i);
+        void printAllAdvisees();
+        void removeAdvisee(int i);
+        bool hasAdvisee(int studId);
+        std::string toString();
     private:
         std::string department;
         DoublyLinkedList<int> *advisees = new DoublyLinkedList<int>();
