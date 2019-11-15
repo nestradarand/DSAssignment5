@@ -59,3 +59,11 @@ string Person::toString()
                         "\nLevel: " + level);
     return returner;
 }
+bool Person::operator < (Person *otherPerson) 
+{
+    return id < otherPerson -> getId();
+}
+bool Person::operator > (Person *otherPerson)
+{
+    return id > otherPerson->getId();
+}

@@ -17,6 +17,9 @@ class Person
         int getId();
         void setId(int newId);
         std::string toString();
+        bool operator < (Person *otherPerson);
+        bool operator >(Person *otherPerson);
+
     private:
         int id;
         std::string level;
