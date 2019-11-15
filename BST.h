@@ -23,8 +23,12 @@ public:
     //prints the values of the tree in order
     void printInOrder();
     TreeNode<T> *getSuccessor(TreeNode<T> *d);
+    //prints all the to string methods for a given tree
+    void printToStrings();
+
 private:
     TreeNode<T> *root;
+    void printFullNodes(TreeNode<T> *root);
 };
 #endif
 
@@ -54,7 +58,6 @@ void BST<T>::recPrint(TreeNode<T> *node)
     }
     else 
     {
-        std::cout << "returned" <<std::endl;
         return;
     }
         
@@ -250,4 +253,24 @@ TreeNode<T> *BST<T>::getSuccessor(TreeNode<T> *d)
         successor->right = d->right;
     }
     return successor;
+}
+template <typename T>
+void BST<T>::printToStrings()
+{
+    if(root != NULL)
+        printFullNodes(root);
+    else 
+        std::cout << "Nothing in the tree to print out" << std::endl;
+}
+template <typename T>
+void BST<T>::printFullNodes(TreeNode<T> *root)
+{
+    if(root != NULL)
+    {
+        printFullNodes(root -> left);
+        std::cout << root -> key -> toString()<<"\n---"<<std::endl;
+        printFullNodes(root ->right);
+    }
+    else 
+        return;
 }

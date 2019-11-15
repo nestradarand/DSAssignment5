@@ -15,7 +15,7 @@ int main(int argc, char** argv)
     BST<Faculty*> *theTree = new BST<Faculty*>();
     theTree ->insert(per1);
     theTree -> insert(per2);
-    theTree -> printInOrder();
+    theTree -> printToStrings();
     delete theTree;
     return 0;
 }
