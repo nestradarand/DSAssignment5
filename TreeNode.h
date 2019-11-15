@@ -37,6 +37,8 @@ TreeNode<T>::~TreeNode()
     //need to check to see if this is right
     //it is because then this will help recursively delete everything in the tree upon destruction
     // delete key;
+    if(key != nullptr)
+        delete key;
     if(left != nullptr)
         delete left;
     if(right != nullptr)

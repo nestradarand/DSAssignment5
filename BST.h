@@ -36,6 +36,8 @@ BST<T>::BST()
 template <typename T>
 BST<T>::~BST()
 {
+    if(root != NULL)
+        delete root;
 }
 //up to us in this case
 ////something wrong
