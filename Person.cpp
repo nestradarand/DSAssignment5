@@ -67,3 +67,14 @@ bool Person::operator > (Person *otherPerson)
 {
     return id > otherPerson->getId();
 }
+bool Person::operator == (Person *otherPerson)
+{
+    cout << "Here"<<endl;
+    if(id == otherPerson ->getId())
+        return true;
+    else 
+    {
+        cout << otherPerson -> getId() <<endl;
+        return false;
+    }
+}

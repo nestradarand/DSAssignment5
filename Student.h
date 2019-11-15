@@ -26,6 +26,7 @@ class Student : public Person
         void setAdvisorId(int i );
         int getAdvisorId();
 
+
     private:
         std::string major;
         double gpa;

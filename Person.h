@@ -19,8 +19,9 @@ class Person
         std::string toString();
         bool operator < (Person *otherPerson);
         bool operator >(Person *otherPerson);
+        bool operator == (Person *otherPerson);
 
-    private:
+    private: 
         int id;
         std::string level;
         std::string name;      
