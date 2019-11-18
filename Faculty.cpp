@@ -41,9 +41,9 @@ void Faculty::printAllAdvisees()
 {
     advisees -> printList();
 }
-void Faculty::removeAdvisee(int i)
+bool Faculty::removeAdvisee(int i)
 {
-    advisees -> remove(i);
+    return advisees ->remove(i);
 }
 bool Faculty::hasAdvisee(int studId)
 {

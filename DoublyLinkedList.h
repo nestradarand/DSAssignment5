@@ -128,7 +128,7 @@ template <typename T>
 bool DoublyLinkedList<T>::remove(T data)
 {
   if(isEmpty())
-    throw std::runtime_error("list is empty");
+    return false;
   DoubleListNode<T> *current = front;
   while(current -> data != data)//as long as we dont find the data
   {

@@ -17,7 +17,7 @@ class Faculty : public Person
         void setDepartment(std::string newDepartment);
         void addAdvisee(int i);
         void printAllAdvisees();
-        void removeAdvisee(int i);
+        bool removeAdvisee(int i);
         bool hasAdvisee(int studId);
         std::string toString();
         std::string department;

@@ -32,7 +32,7 @@ void ExtendedTree<T>::printToStrings()
     if (this ->root != NULL)
         printFullNodes(this -> root);
     else
-        std::cout << "Nothing in the tree to print out" << std::endl;
+        std::cout << "There is nothing stored to print out" << std::endl;
 }
 //works
 template <typename T>
