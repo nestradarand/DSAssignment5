@@ -78,3 +78,29 @@ int Student::getAdvisorId()
 {
     return advisorId;
 }
+bool Student::operator<(Student const &otherPerson) 
+{
+    return this -> id < otherPerson.id;
+}
+bool Student::operator>(Student const &otherPerson)
+{
+    return this->id > otherPerson.id;
+}
+bool Student::operator==(Student const &otherPerson)
+{
+    return this->id == otherPerson.id;
+}
+bool Student::operator!=(Student const &otherPerson)
+{
+    return this->id != otherPerson.id;
+}
+bool Student::operator>=(Student const &otherStudent)
+{
+    return this -> id >= otherStudent.id;
+}
+bool Student::operator<=(Student const &otherStudent)
+{
+    return this->id <= otherStudent.id;
+}
+Student::~Student(){
+}

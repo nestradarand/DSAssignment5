@@ -10,7 +10,7 @@ class BST
 public:
     BST();
     ~BST();
-    bool search(T value);
+    T search(T value);
     void insert(T value);
     bool deleteNode(T value);
 
@@ -24,10 +24,7 @@ public:
     void printInOrder();
     TreeNode<T> *getSuccessor(TreeNode<T> *d);
     //prints all the to string methods for a given tree
-    void printToStrings();
-    T getNodeData(T value);
 
-private:
     TreeNode<T> *root;
     void printFullNodes(TreeNode<T> *root);
 };
@@ -134,10 +131,10 @@ void BST<T>::insert(T value)
     }
 }
 template <typename T>
-bool BST<T>::search(T value)
+T BST<T>::search(T value)
 {
     if (root == NULL)
-        return false;
+        return NULL;
     //tree is not empty; let's look
     TreeNode<T> *current = root;
     while (current ->key != value)
@@ -147,28 +144,11 @@ bool BST<T>::search(T value)
         else
             current = current->right;
         if (current == NULL) //didnt find the value
-            return false;
-    }
-    return true; //happens if the value was found which would have broken the loop above
-}
-template <typename T>
-T BST<T>::getNodeData(T value)
-{
-    if (root == NULL)
-        return NULL;
-    //tree is not empty; let's look
-    TreeNode<T> *current = root;
-    while (current->key != value)
-    {
-        if (value < current->key)
-            current = current->left;
-        else
-            current = current->right;
-        if (current == NULL) //didnt find the value
             return NULL;
     }
-    return current->key; //happens if the value was found which would have broken the loop above
+    return current ->key; //happens if the value was found which would have broken the loop above
 }
+
 //works
 template <typename T>
 bool BST<T>::deleteNode(T value)
@@ -273,23 +253,4 @@ TreeNode<T> *BST<T>::getSuccessor(TreeNode<T> *d)
     }
     return successor;
 }
-template <typename T>
-void BST<T>::printToStrings()
-{
-    if(root != NULL)
-        printFullNodes(root);
-    else 
-        std::cout << "Nothing in the tree to print out" << std::endl;
-}
-template <typename T>
-void BST<T>::printFullNodes(TreeNode<T> *root)
-{
-    if(root != NULL)
-    {
-        printFullNodes(root -> left);
-        std::cout << root -> key -> toString()<<"\n---"<<std::endl;
-        printFullNodes(root ->right);
-    }
-    else 
-        return;
-}
+

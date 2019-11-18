@@ -20,8 +20,14 @@ class Faculty : public Person
         void removeAdvisee(int i);
         bool hasAdvisee(int studId);
         std::string toString();
-    private:
         std::string department;
         DoublyLinkedList<int> *advisees = new DoublyLinkedList<int>();
+
+        bool operator==(Faculty const &otherFaculty);
+        bool operator>(Faculty const &otherFaculty);
+        bool operator<(Faculty const &otherFaculty);
+        bool operator>=(Faculty const &otherFaculty);
+        bool operator<=(Faculty const &otherFaculty);
+        bool operator!=(Faculty const &otherFaculty);
 };
 #endif

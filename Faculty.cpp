@@ -61,3 +61,27 @@ string Faculty::toString()
                         to_string(advisees -> getSize()));
     return returner;
 }
+bool Faculty::operator<(Faculty const &otherPerson)
+{
+    return this->id < otherPerson.id;
+}
+bool Faculty::operator>(Faculty const &otherPerson)
+{
+    return this->id > otherPerson.id;
+}
+bool Faculty::operator==(Faculty const &otherPerson)
+{
+    return this->id == otherPerson.id;
+}
+bool Faculty::operator!=(Faculty const &otherPerson)
+{
+    return this->id != otherPerson.id;
+}
+bool Faculty::operator>=(Faculty const &otherFaculty)
+{
+    return this->id >= otherFaculty.id;
+}
+bool Faculty::operator<=(Faculty const &otherFaculty)
+{
+    return this->id <= otherFaculty.id;
+}

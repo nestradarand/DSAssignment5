@@ -18,6 +18,7 @@ class Student : public Person
         Student(int newId, std::string newName,
                 std::string newLevel, std::string newMajor,
                 double newGPA,int newAdvisorId);
+        ~Student();
         std::string toString();
         void setMajor(std::string newMajory);
         std::string getMajor();
@@ -26,8 +27,14 @@ class Student : public Person
         void setAdvisorId(int i );
         int getAdvisorId();
 
+        bool operator==(Student const &otherStudent);
+        bool operator>(Student const &otherStudent);
+        bool operator<(Student const &otherStudent);
+        bool operator>=(Student const &otherStudent);
+        bool operator<=(Student const &otherStudent);
+        bool operator!=(Student const &otherStudent);
 
-    private:
+private:
         std::string major;
         double gpa;
         int advisorId;

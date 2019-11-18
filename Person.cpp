@@ -59,22 +59,23 @@ string Person::toString()
                         "\nLevel: " + level);
     return returner;
 }
-bool Person::operator < (Person *otherPerson) 
-{
-    return id < otherPerson -> getId();
-}
-bool Person::operator > (Person *otherPerson)
-{
-    return id > otherPerson->getId();
-}
-bool Person::operator == (Person *otherPerson)
-{
-    cout << "Here"<<endl;
-    if(id == otherPerson ->getId())
-        return true;
-    else 
-    {
-        cout << otherPerson -> getId() <<endl;
-        return false;
-    }
-}
+// bool Person::operator < (const Person &otherPerson) 
+// {
+//     return this->id < otherPerson.id;
+// }
+// bool Person::operator > (const Person &otherPerson)
+// {
+//     return this->id > otherPerson.id;
+// }
+// bool Person::operator==(const Person &secondPerson)
+// {
+//     return (this->id == secondPerson.id);
+// }
+// bool Person::operator!=(const Person &secondPerson)
+// {
+//     return (this->id != secondPerson.id);
+// }
+// bool operator==(const Person &firstPerson,const Person &secondPerson)
+// {
+//     return firstPerson.id == secondPerson.id;
+// }

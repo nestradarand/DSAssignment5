@@ -17,11 +17,11 @@ class Person
         int getId();
         void setId(int newId);
         std::string toString();
-        bool operator < (Person *otherPerson);
-        bool operator >(Person *otherPerson);
-        bool operator == (Person *otherPerson);
 
-    private: 
+
+        // friend bool operator==(const Person &firstPerson,const Person &secondPerson);
+
+ 
         int id;
         std::string level;
         std::string name;      
