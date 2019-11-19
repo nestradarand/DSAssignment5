@@ -15,11 +15,13 @@ class ExtendedTree: public BST<T>
         void insert(T value);
         T search(T entry);
         T getEntryOtherThan(T value);
+        bool deleteNode(T entry);
     
 
     private:
         void printFullNodes(TreeNode<T> *root);
         T privateGetEntryOtherThan(T entry);
+        TreeNode<T> *getSuccessor(TreeNode<T> *d);
 };
 #endif
 template <typename T>
@@ -131,4 +133,108 @@ T ExtendedTree<T>::privateGetEntryOtherThan(T entry)
         }
         return current->key; //happens if the value was found which would have broken the loop above
     }
+}
+template <typename T>
+bool ExtendedTree<T>::deleteNode(T value)
+{
+    if (this ->root == NULL)
+        return false;
+
+    TreeNode<T> *current = this ->root;
+    TreeNode<T> *parent = this ->root;
+    bool isLeft = true;
+    while (current->key->operator!=(*value))
+    {
+        isLeft = true;
+        parent = current;
+        if (value->operator<(*current->key))
+            current = current->left;
+        else
+        {
+            isLeft = false;
+            current = current->right;
+        }
+        //occurs in the even that the value is not found in the tree
+        if (current == NULL)
+        {
+            std::cout << "value not found to delete" << std::endl;
+            return false;
+        }
+    }
+    //if we make it here then we found the node with the value to be deleted
+    //if it has no non null children(leafnode)
+    if (current->left == NULL && current->right == NULL)
+    {
+        if (current == this ->root)
+            this -> root = NULL;
+        else if (isLeft)
+            parent->left = NULL;
+        else
+            parent->right = NULL;
+    }
+
+    //if node to be deleted has one child
+    //need to determine if child is left or right
+    else if (current->right == NULL) //no right child
+    {
+        if (current == this -> root)
+        {
+            this->root = current->left;
+        }
+        else if (isLeft)
+        {
+            parent->left = current->left;
+        }
+        else
+            parent->right = current->left;
+    }
+    else if (current->left == NULL) //no left child
+    {
+        if (current == this ->root)
+        {
+            this ->root = current->right;
+        }
+        else if (isLeft)
+        {
+            parent->left = current->right;
+        }
+        else
+            parent->right = current->right;
+    }
+    else //node to be deleted has two children
+    {
+        TreeNode<T> *successor = getSuccessor(current);
+
+        if (current == this ->root)
+            this ->root = successor;
+        else if (isLeft)
+        {
+            parent->left = successor;
+        }
+        else
+            parent->right = successor;
+        successor->left = current->left;
+    }
+    return true;
+}
+
+template <typename T>
+TreeNode<T> *ExtendedTree<T>::getSuccessor(TreeNode<T> *d)
+{
+    TreeNode<T> *sp = d; //successor parent
+    TreeNode<T> *successor = d;
+    TreeNode<T> *current = d->right;
+
+    while (current != NULL) //one right all the way left
+    {
+        sp = successor;
+        successor = current;
+        current = current->left;
+    }
+    if (successor != d->right)       // if it just isnt the right child of d
+    {                                //means it is a successor of the right child
+        sp->left = successor->right; //if the leftmost has a right child
+        successor->right = d->right;
+    }
+    return successor;
 }

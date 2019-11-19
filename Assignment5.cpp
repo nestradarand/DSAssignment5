@@ -20,8 +20,8 @@ int main(int argc, char** argv)
 
     Faculty *teacher2 = new Faculty(555,"Jerry Seinfeld","professor","Schmid");
     teacher2 ->addAdvisee(thestud ->getId());
-    teacher2 ->addAdvisee(newStud->getId());
     Faculty *teacher = new Faculty(445,"Larry","Crean");
+    teacher->addAdvisee(newStud->getId());
     facultyTree -> insert(teacher);
     facultyTree -> insert(teacher2);
 
@@ -125,7 +125,6 @@ int main(int argc, char** argv)
                     finder = new Student(theAdvisees[i]);
                     cout << studentTree ->search(finder) ->toString()<<endl;
                 }
-                cout << tempFac ->toString()<<endl;
                 delete finder;
             }
             else 
@@ -133,6 +132,55 @@ int main(int argc, char** argv)
         }
         else
             cout << "Faculty with that id not found." << endl;
+    }
+    else if (inNum == 10)
+    {
+        cout << "Enter the id number of the faculty member you wish to delete" << endl;
+        cin >> inNum;
+        Faculty *searcher = new Faculty(inNum);
+        Faculty *tempFac = facultyTree ->search(searcher),*replacement;
+        Student *finder,*temp;
+        bool success = true;
+        if(tempFac)
+        {
+            int adviseeCount = tempFac ->getAdviseeNumber();
+            int *adviseeArray;
+            if (adviseeCount > 0)
+            {
+                adviseeArray = tempFac ->returnAllAdvisees();
+                for(int i =0;i <adviseeCount;++i)
+                {
+                    finder = new Student(adviseeArray[i]);
+                    temp = studentTree ->search(finder);
+                    replacement = facultyTree ->getEntryOtherThan(tempFac);
+                    if(replacement)
+                    {
+                        temp ->setAdvisorId(replacement ->getId());
+                        replacement ->addAdvisee(temp ->getId());
+                        tempFac -> removeAdvisee(adviseeArray[i]);
+                    }
+                    else 
+                    {
+                        cout <<"No suitable advisors available to take on remaining students, operation aborted"<<endl;
+                        success = false;
+                        break;
+                    }
+                }
+                if(success)
+                    cout << "Advisees passed on to next available faculty member"<<endl;
+            }
+            if(facultyTree ->deleteNode(searcher)&&success)                
+                cout << "Faculty member effectively deleted"<<endl;
+            else 
+                cout << "Unable to delete faculty member"<<endl;
+            facultyTree ->printToStrings();         
+                        
+        }
+        else 
+            cout <<"Faculty member with that ID number not found"<<endl;
+        delete finder;
+        delete searcher;
+
     }
     else if(inNum == 11)
     {
@@ -195,7 +243,7 @@ int main(int argc, char** argv)
                     }
                 }
                 else 
-                    cout <<"Advisee was not contained in the list"<<endl;
+                    cout <<"Advisee was not contained on this faculty member's list"<<endl;
             }
             else 
                 cout << "Student with that ID number not found"<<endl;
