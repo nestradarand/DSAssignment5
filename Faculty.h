@@ -30,5 +30,7 @@ class Faculty : public Person
         bool operator>=(Faculty const &otherFaculty);
         bool operator<=(Faculty const &otherFaculty);
         bool operator!=(Faculty const &otherFaculty);
+        int* returnAllAdvisees();
+        int getAdviseeNumber();
 };
 #endif

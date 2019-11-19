@@ -89,3 +89,21 @@ bool Faculty::hasAdvisees()
 {
     return (advisees ->getSize() != 0);
 }
+int* Faculty::returnAllAdvisees()
+{
+    int numberofStudents = advisees ->getSize();
+    int *output = new int[numberofStudents];
+    int index =0;
+    int nextNumber;
+    while(!advisees ->isEmpty())
+    {
+        output[index++] = advisees ->removeFront();
+    }
+    for(int i =0; i <numberofStudents;++i)
+        advisees -> insertBack(output[i]);
+    return output;
+}
+int Faculty::getAdviseeNumber()
+{
+    return advisees ->getSize();
+}

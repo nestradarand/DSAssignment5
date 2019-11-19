@@ -39,8 +39,8 @@ int main(int argc, char** argv)
                       "\n10. Delete a faculty member using their faculty id"
                       "\n11. Change students advisor given their student id and new faculty id"
                       "\n12. Remove an advisee froma faculty member given their id"
-                      "\n12. Rollback"
-                      "\n13. Exit");
+                      "\n13. Rollback"
+                      "\n14. Exit");
     cout << theMenu <<endl;
     string inStr;
     int inNum;
@@ -111,6 +111,29 @@ int main(int argc, char** argv)
     {
         cout <<"Enter the id of the faculty member you want to see the advisees for"<<endl;
         cin >>inNum;
+        Faculty *searchFac = new Faculty(inNum);
+        Faculty *tempFac = facultyTree ->search(searchFac);
+        if(tempFac)
+        {
+            if(tempFac -> hasAdvisees())
+            {
+                int numAdvisees = tempFac ->getAdviseeNumber();
+                int *theAdvisees = tempFac->returnAllAdvisees();
+                Student *finder;
+                for(int i =0;i<numAdvisees;++i)
+                {
+                    finder = new Student(theAdvisees[i]);
+                    cout << studentTree ->search(finder) ->toString()<<endl;
+                }
+                cout << tempFac ->toString()<<endl;
+                delete finder;
+            }
+            else 
+                cout << "This advisor has no advisees"<<endl;
+          
+        }
+        else
+            cout << "Faculty with that id not found."<<endl;
 
     }
     else if(inNum == 11)
