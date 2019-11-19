@@ -14,10 +14,12 @@ class ExtendedTree: public BST<T>
         void printToStrings();
         void insert(T value);
         T search(T entry);
+        T getEntryOtherThan(T value);
+    
 
     private:
         void printFullNodes(TreeNode<T> *root);
-
+        T privateGetEntryOtherThan(T entry);
 };
 #endif
 template <typename T>
@@ -101,4 +103,32 @@ T ExtendedTree<T>::search(T value)
             return NULL;
     }
     return current->key; //happens if the value was found which would have broken the loop above
+}
+template <typename T>
+T ExtendedTree<T>::getEntryOtherThan(T entry)
+{
+    return privateGetEntryOtherThan(entry);
+}
+//works
+template <typename T>
+T ExtendedTree<T>::privateGetEntryOtherThan(T entry)
+{
+    {
+        if (this->root == NULL)
+            return NULL;
+        //tree is not empty; let's look
+        TreeNode<T> *current = this->root;
+        if(current ->key->operator!=(*entry))
+            return current->key;
+        else 
+        {
+            if(current ->right != NULL)
+                current  = current -> right;
+            else if (current->left != NULL)
+                current = current -> left;
+            else 
+                return NULL;
+        }
+        return current->key; //happens if the value was found which would have broken the loop above
+    }
 }

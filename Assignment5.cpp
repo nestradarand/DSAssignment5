@@ -25,6 +25,7 @@ int main(int argc, char** argv)
     facultyTree -> insert(teacher);
     facultyTree -> insert(teacher2);
 
+
     cout <<"Welcome to the student and faculty cataloging system"<< endl;
     string theMenu = ("Available Commands:\n1. Print all students and their information"
                       "\n2. Print all faculty and their information"
@@ -157,17 +158,31 @@ int main(int argc, char** argv)
                 bool answer = facToEdit ->removeAdvisee(tempStud ->getId());
                 if(answer)
                 {
-                    cout << "Advissee successfully removed from list" << endl;
-                    //need to reassign the student here
+                    Faculty *tempFac;
+                    tempFac = facultyTree ->getEntryOtherThan(facToEdit);
+                    if(tempFac)
+                    {
+                        result->setAdvisorId(tempFac->getId());
+                        tempFac -> addAdvisee(tempStud ->getId());
+                        cout << "Advissee successfully removed from list and reassigned to next available faculty." << endl;
+                        cout << "New faculty advisor: " << facultyTree ->search(tempFac)->toString()<<endl;
+                    }
+                    else 
+                    {
+                        facToEdit -> addAdvisee(result ->getId());
+                        cout <<"No other faculty members are available to take this student. Command cancelled"<<endl;
+                    }
                 }
                 else 
                     cout <<"Advisee was not contained in the list"<<endl;
             }
             else 
                 cout << "Student with that ID number not found"<<endl;
+            delete tempStud;
         }
         else 
             cout << "Faculty member with that ID number not found"<<endl;
+        delete temp;
     }
 
 

@@ -19,6 +19,7 @@ class Faculty : public Person
         void printAllAdvisees();
         bool removeAdvisee(int i);
         bool hasAdvisee(int studId);
+        bool hasAdvisees();
         std::string toString();
         std::string department;
         DoublyLinkedList<int> *advisees = new DoublyLinkedList<int>();

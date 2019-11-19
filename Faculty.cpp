@@ -85,3 +85,7 @@ bool Faculty::operator<=(Faculty const &otherFaculty)
 {
     return this->id <= otherFaculty.id;
 }
+bool Faculty::hasAdvisees()
+{
+    return (advisees ->getSize() != 0);
+}
