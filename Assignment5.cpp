@@ -129,12 +129,10 @@ int main(int argc, char** argv)
                 delete finder;
             }
             else 
-                cout << "This advisor has no advisees"<<endl;
-          
+                cout << "This advisor has no advisees"<<endl;          
         }
         else
-            cout << "Faculty with that id not found."<<endl;
-
+            cout << "Faculty with that id not found." << endl;
     }
     else if(inNum == 11)
     {
