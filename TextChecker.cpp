@@ -18,7 +18,7 @@ bool TextChecker::isNumeric(string str)
     int decimalCount = 0;
     for(int i =0; i<stringLength;++i)
     {
-        if (!isdigit(str[i]))
+        if (!isdigit(str[i]) && str[i] != '.')
             return false;
         else if (str[i] == '.')
             decimalCount++;
@@ -36,7 +36,7 @@ bool TextChecker::isPureText(string str)
             return false;
     return true;
 }
-bool TextChecker::isInteger(string str)
+bool TextChecker::isPositiveInteger(string str)
 {
     int stringLength = str.length();
     for (int i = 0; i < stringLength; ++i)

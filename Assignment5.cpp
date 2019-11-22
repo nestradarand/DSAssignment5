@@ -50,7 +50,7 @@ int main(int argc, char** argv)
     double inDub;
     while(true)
     {
-        cout << "Enter new command.\nEnter '44' to display options"<<endl;
+        cout << "Enter new command.\nEnter '0' to display options"<<endl;
         cin >>inNum;
         if (inNum == 1)
         {
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
             Student *result;
             result = studentTree->search(tempStudent);
             if (result)
-                cout << result->toString();
+                cout << result->toString()<<endl;
             else
                 cout << "***Student with that ID was not found***" << endl;
             delete tempStudent;
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
             Faculty *tempResult;
             tempResult = facultyTree->search(tempFac);
             if (tempResult)
-                cout << tempResult->toString();
+                cout << tempResult->toString()<<endl;
             else
                 cout << "***Faculty member with that ID was not found***" << endl;
             delete tempFac;
@@ -144,61 +144,75 @@ int main(int argc, char** argv)
             double newGpa;
             string newName,newLevel,newMajor;
             cout << "---New Student Entry---"<<endl;
-            cout << "Enter the id number of the student:"<<endl;
-            cin  >> holder;
-            if(textHelper.isInteger(holder))
+            cout << "Enter the id number of the new student:"<<endl;
+            getline(cin>>ws,holder);
+            if(textHelper.isPositiveInteger(holder))
             {
                 newId = std::stoi(holder);
-                cout << "Enter the name of the student"<<endl;
-                cin >>holder;
-                if(textHelper.isPureText(holder)&& holder.size() >0)
+                Student *finder = new Student(newId);
+                if(studentTree ->search(finder))
+                    cout << "***Student with that ID number already exists, command failed***"<<endl; 
+                else 
                 {
-                    newName = holder;
-                    cout << "Enter the level/year for the student"<<endl;
-                    cin >>holder;
-                    if(textHelper.isPureText(holder)&&holder.size()>0)
+                    cout << "Enter the name of the student" << endl;
+                    getline(cin >> ws, holder);
+                    if (textHelper.isPureText(holder) && holder.size() > 0)
                     {
-                        newLevel = holder;
-                        cout << "Enter the student's major"<<endl;
-                        cin>>holder;
-                        if(textHelper.isPureText(holder))
+                        newName = holder;
+                        cout << "Enter the level/year for the student" << endl;
+                        getline(cin >> ws, holder);
+                        if (textHelper.isPureText(holder) && holder.size() > 0)
                         {
-                            newMajor = holder;
-                            cout << "Enter the gpa for the student"<<endl;
-                            cin >> holder;
-                            if(textHelper.isNumeric(holder))
+                            newLevel = holder;
+                            cout << "Enter the student's major" << endl;
+                            getline(cin >> ws, holder);
+                            if (textHelper.isPureText(holder))
                             {
-                                newGpa = std::stod(holder);
-                                cout << "Enter the id of the student's advisor"<<endl;
-                                cin >> holder;
-                                if(textHelper.isInteger(holder))
+                                newMajor = holder;
+                                cout << "Enter the GPA for the student" << endl;
+                                getline(cin >> ws, holder);
+                                if (textHelper.isNumeric(holder)&&std::stod(holder)<=4.5)
                                 {
-                                    newAdvisorId = std::stoi(holder);
-                                    Student *tempNewStud = new Student(newId,newName,newLevel,newMajor,newGpa,newAdvisorId);
-                                    studentTree ->insert(tempNewStud);
-                                    cout << "Student successfully saved to system"<<endl;
-                                    cout <<"--New Student Profile--\n"<<tempNewStud->toString()<<endl;
-                                    ////rollback functionality goes here
+                                    newGpa = std::stod(holder);
+                                    cout << "Enter the id of the student's advisor" << endl;
+                                    getline(cin >> ws, holder);
+                                    if (textHelper.isPositiveInteger(holder))
+                                    {
+                                        newAdvisorId = std::stoi(holder);
+                                        Faculty *searcher = new Faculty(newAdvisorId);
+                                        Faculty *theAdvisor = facultyTree->search(searcher);
+                                        if (theAdvisor)
+                                        {
+                                            Student *tempNewStud = new Student(newId, newName, newLevel, newMajor, newGpa, newAdvisorId);
+                                            studentTree->insert(tempNewStud);
+                                            theAdvisor->addAdvisee(tempNewStud->getId());
+                                            cout << "Student successfully saved to system" << endl;
+                                            cout << "---New Student Profile---\n"
+                                                 << tempNewStud->toString() << endl;
+                                            ////rollback functionality goes here
+                                        }
+                                        else
+                                            cout << "***Advisor with that ID was not found, command aborted***" << endl;
+                                        delete searcher;
+                                    }
+                                    else
+                                        cout << "***Invalid advisor id entered, command aborted***" << endl;
                                 }
-                                else 
-                                    cout << "***Invalid advisor id entered, command aborted***"<<endl;
+                                else
+                                    cout << "***Invalid gpa entered***" << endl;
                             }
                             else
-                                cout << "***Invalid gpa entered***"<<endl;
-                            
+                                cout << "***Invalid major entered***" << endl;
                         }
-                        else 
-                            cout << "***Invalid major entered***"<<endl;
+                        else
+                            cout << "***Invalid level/year entered, command aborted***" << endl;
                     }
-                    else 
-                        cout << "***Invalid level/year entered, command aborted***"<<endl;
+                    else
+                        cout << "***Invalid name entered, command aborted***" << endl;
                 }
-                else 
-                    cout << "***Invalid name entered, command aborted***"<<endl;
             }
             else 
                 cout << "***Invalid Id number entered, command aborted***"<<endl;
-
         }
         else if (inNum == 8)
         {
@@ -232,6 +246,53 @@ int main(int argc, char** argv)
             else
                 cout << "***Student with that Id not found***" << endl;
             delete searcher;
+        }
+        else if(inNum == 9)
+        {
+            int newId;
+            string newName, newLevel, newMajor,newDepartment;
+            cout << "Enter the ID number for the new faculty member"<<endl;
+            getline(cin>>ws,holder);
+            if(textHelper.isPositiveInteger(holder))
+            {
+                newId  = std::stoi(holder);
+                Faculty *searcher = new Faculty(newId);
+                if(!(facultyTree ->search(searcher)))
+                {
+                    cout << "Enter the name of the faculty member"<<endl;
+                    getline(cin>>ws,holder);
+                    if(textHelper.isPureText(holder))
+                    {
+                        newName = holder;
+                        cout << "Enter the new faculty member's position/title"<<endl;
+                        getline(cin>>ws,holder);
+                        if(textHelper.isPureText(holder))
+                        {
+                            newLevel = holder;
+                            cout << "Enter the department the faculty member is in"<<endl;
+                            getline(cin>>ws,holder);
+                            if(textHelper.isPureText(holder))
+                            {
+                                newDepartment = holder;
+                                Faculty *newFac = new Faculty(newId,newName,newLevel,newDepartment);
+                                facultyTree ->insert(newFac);
+                                cout << "New faculty member successfully added to the database"<<endl;
+                                cout <<"---New Faculty Profile Info---\n"<<newFac ->toString()<<endl;
+                            }
+                            else 
+                                cout << "***Invalid department entered, command aborted***"<<endl;
+                        }
+                        else
+                            cout << "***Invalid position entered, command aborted***" << endl;
+                    }
+                    else
+                        cout << "***Invalid name entered, command aborted***" << endl;
+                }
+                else
+                    cout << "***Faculty member with that ID number already exists, command aborted***" << endl;
+            }
+            else
+                cout << "***Invalid ID number entered, command aborted***" << endl;
         }
         else if (inNum == 10)
         {
@@ -269,11 +330,15 @@ int main(int argc, char** argv)
                     if (success)
                         cout << "Advisees passed on to next available faculty member" << endl;
                 }
-                if (facultyTree->deleteNode(searcher) && success)
-                    cout << "Faculty member effectively deleted" << endl;
+                if (success)
+                {
+                    if(facultyTree->deleteNode(searcher))
+                        cout<< "Faculty member effectively deleted" << endl;
+                    else 
+                        cout << "***Error deleting faculty member***"<<endl;
+                }
                 else
                     cout << "***Unable to delete faculty member***" << endl;
-                facultyTree->printToStrings();
             }
             else
                 cout << "***Faculty member with that ID number not found***" << endl;
@@ -294,7 +359,12 @@ int main(int argc, char** argv)
                 Faculty *result = facultyTree->search(finder);
                 if (result)
                 {
+                    int previousAdvisorId = studentToEdit ->getAdvisorId();
                     studentToEdit->setAdvisorId(result->getId());
+                    result ->addAdvisee(studentToEdit->getId());
+
+                    Faculty *previousAdvisor = new Faculty(previousAdvisorId);
+                    facultyTree ->search(previousAdvisor) ->removeAdvisee(studentToEdit ->getId());
                     cout << "Student advisor id sucessfully updated" << endl;
                     cout << "Updated entry" << endl;
                     cout << studentToEdit->toString() << endl;
@@ -355,7 +425,7 @@ int main(int argc, char** argv)
             cout << "Program closed and data saved." <<endl;
             break;
         }
-        else if (inNum == 44)
+        else if (inNum == 0)
             cout << theMenu<<endl;
         else 
             cout << "*Invalid command entered*"<<endl;

@@ -10,7 +10,7 @@ class TextChecker
         ~TextChecker();
         bool isNumeric(std::string str);
         bool isPureText(std::string str);
-        bool isInteger(std::string str);
+        bool isPositiveInteger(std::string str);
 };
 
 
