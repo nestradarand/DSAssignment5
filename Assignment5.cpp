@@ -4,13 +4,14 @@
 #include "Student.h"
 #include "Faculty.h"
 #include "ExtendedTree.h"
+#include "TextChecker.h"
 
 using namespace std;
 
 
 int main(int argc, char** argv)
-{    
-    
+{
+    TextChecker textHelper;
     ExtendedTree<Faculty*> *facultyTree = new ExtendedTree<Faculty*>();
     ExtendedTree<Student*> *studentTree = new ExtendedTree<Student*>();
     Student *thestud = new Student(45,"Noah","Senior","Data Analytics",4.0,555);
@@ -44,7 +45,7 @@ int main(int argc, char** argv)
                       "\n13. Rollback"
                       "\n14. Exit");
     cout << theMenu <<endl;
-    string inStr;
+    string holder;
     int inNum;
     double inDub;
     while(true)
@@ -71,7 +72,7 @@ int main(int argc, char** argv)
             if (result)
                 cout << result->toString();
             else
-                cout << "Student with that ID was not found." << endl;
+                cout << "***Student with that ID was not found***" << endl;
             delete tempStudent;
         }
         else if (inNum == 4)
@@ -84,7 +85,7 @@ int main(int argc, char** argv)
             if (tempResult)
                 cout << tempResult->toString();
             else
-                cout << "Faculty member with that ID was not found." << endl;
+                cout << "***Faculty member with that ID was not found***" << endl;
             delete tempFac;
         }
         else if (inNum == 5)
@@ -102,14 +103,14 @@ int main(int argc, char** argv)
                 facResult = facultyTree->search(searcher);
                 if (facResult)
                 {
-                    cout << "Advisor Information:\n";
+                    cout << "-----Advisor Information:-----"<<endl;
                     cout << facResult->toString();
                 }
                 else
-                    cout << "Advisor number stored for student not found" << endl;
+                    cout << "***Advisor number stored for student not found***" << endl;
             }
             else
-                cout << "No student with that ID was found" << endl;
+                cout << "***No student with that ID was found***" << endl;
         }
         else if (inNum == 6)
         {
@@ -132,14 +133,76 @@ int main(int argc, char** argv)
                     delete finder;
                 }
                 else
-                    cout << "This advisor has no advisees" << endl;
+                    cout << "***This advisor has no advisees***" << endl;
             }
             else
-                cout << "Faculty with that id not found." << endl;
+                cout << "***Faculty with that id not found***" << endl;
+        }
+        else if (inNum == 7)
+        {
+            int newId,newAdvisorId;
+            double newGpa;
+            string newName,newLevel,newMajor;
+            cout << "---New Student Entry---"<<endl;
+            cout << "Enter the id number of the student:"<<endl;
+            cin  >> holder;
+            if(textHelper.isInteger(holder))
+            {
+                newId = std::stoi(holder);
+                cout << "Enter the name of the student"<<endl;
+                cin >>holder;
+                if(textHelper.isPureText(holder)&& holder.size() >0)
+                {
+                    newName = holder;
+                    cout << "Enter the level/year for the student"<<endl;
+                    cin >>holder;
+                    if(textHelper.isPureText(holder)&&holder.size()>0)
+                    {
+                        newLevel = holder;
+                        cout << "Enter the student's major"<<endl;
+                        cin>>holder;
+                        if(textHelper.isPureText(holder))
+                        {
+                            newMajor = holder;
+                            cout << "Enter the gpa for the student"<<endl;
+                            cin >> holder;
+                            if(textHelper.isNumeric(holder))
+                            {
+                                newGpa = std::stod(holder);
+                                cout << "Enter the id of the student's advisor"<<endl;
+                                cin >> holder;
+                                if(textHelper.isInteger(holder))
+                                {
+                                    newAdvisorId = std::stoi(holder);
+                                    Student *tempNewStud = new Student(newId,newName,newLevel,newMajor,newGpa,newAdvisorId);
+                                    studentTree ->insert(tempNewStud);
+                                    cout << "Student successfully saved to system"<<endl;
+                                    cout <<"--New Student Profile--\n"<<tempNewStud->toString()<<endl;
+                                    ////rollback functionality goes here
+                                }
+                                else 
+                                    cout << "***Invalid advisor id entered, command aborted***"<<endl;
+                            }
+                            else
+                                cout << "***Invalid gpa entered***"<<endl;
+                            
+                        }
+                        else 
+                            cout << "***Invalid major entered***"<<endl;
+                    }
+                    else 
+                        cout << "***Invalid level/year entered, command aborted***"<<endl;
+                }
+                else 
+                    cout << "***Invalid name entered, command aborted***"<<endl;
+            }
+            else 
+                cout << "***Invalid Id number entered, command aborted***"<<endl;
+
         }
         else if (inNum == 8)
         {
-            cout << "Enter the number of the student you want to delete"<<endl;
+            cout << "Enter the id number of the student you want to delete"<<endl;
             cin >>inNum;
             Student *searcher = new Student(inNum);
             Student *tempStud = studentTree ->search(searcher);
@@ -156,17 +219,18 @@ int main(int argc, char** argv)
                         cout << "Student successfully deleted" << endl;
                         if (found->removeAdvisee(studId))
                             cout << "Student removed from "<<found ->getName()<< "'s advisee list"<<endl;
-                        else 
-                            cout << "Error removing student from advisor's advisee list"<<endl;
+                        else
+                            cout << "***Error removing student from advisor's advisee list***" << endl;
+                        ////need to store the rollback call here
                     }
 
                 }
-                else 
-                    cout << "Error in removing the student from advisor list, command aborted." <<endl;
+                else
+                    cout << "***Error in removing the student from advisor list, command aborted***" << endl;
                 delete finder;
             }
-            else 
-                cout <<"Student with that Id not found"<<endl;
+            else
+                cout << "***Student with that Id not found***" << endl;
             delete searcher;
         }
         else if (inNum == 10)
@@ -197,7 +261,7 @@ int main(int argc, char** argv)
                         }
                         else
                         {
-                            cout << "No suitable advisors available to take on remaining students, operation aborted" << endl;
+                            cout << "***No suitable advisors available to take on remaining students, operation aborted***" << endl;
                             success = false;
                             break;
                         }
@@ -208,11 +272,11 @@ int main(int argc, char** argv)
                 if (facultyTree->deleteNode(searcher) && success)
                     cout << "Faculty member effectively deleted" << endl;
                 else
-                    cout << "Unable to delete faculty member" << endl;
+                    cout << "***Unable to delete faculty member***" << endl;
                 facultyTree->printToStrings();
             }
             else
-                cout << "Faculty member with that ID number not found" << endl;
+                cout << "***Faculty member with that ID number not found***" << endl;
             delete finder;
             delete searcher;
         }
@@ -236,11 +300,11 @@ int main(int argc, char** argv)
                     cout << studentToEdit->toString() << endl;
                 }
                 else
-                    cout << "Faculty with that id number does not exist" << endl;
+                    cout << "***Faculty with that id number does not exist***" << endl;
                 delete finder;
             }
             else
-                cout << "Student with that ID not found" << endl;
+                cout << "***Student with that ID not found***" << endl;
             delete temp;
         }
         else if (inNum == 12)
@@ -272,18 +336,18 @@ int main(int argc, char** argv)
                         else
                         {
                             facToEdit->addAdvisee(result->getId());
-                            cout << "No other faculty members are available to take this student. Command cancelled" << endl;
+                            cout << "***No other faculty members are available to take this student. Command cancelled***" << endl;
                         }
                     }
                     else
-                        cout << "Advisee was not contained on this faculty member's list" << endl;
+                        cout << "***Advisee was not contained on this faculty member's list***" << endl;
                 }
                 else
-                    cout << "Student with that ID number not found" << endl;
+                    cout << "***Student with that ID number not found***" << endl;
                 delete tempStud;
             }
             else
-                cout << "Faculty member with that ID number not found" << endl;
+                cout << "***Faculty member with that ID number not found***" << endl;
             delete temp;
         }
         else if(inNum == 14)
@@ -293,6 +357,8 @@ int main(int argc, char** argv)
         }
         else if (inNum == 44)
             cout << theMenu<<endl;
+        else 
+            cout << "*Invalid command entered*"<<endl;
     }
 
     
