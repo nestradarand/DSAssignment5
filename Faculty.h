@@ -32,5 +32,7 @@ class Faculty : public Person
         bool operator!=(Faculty const &otherFaculty);
         int* returnAllAdvisees();
         int getAdviseeNumber();
+
+        std::string getSerializable();
 };
 #endif

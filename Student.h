@@ -34,6 +34,8 @@ class Student : public Person
         bool operator<=(Student const &otherStudent);
         bool operator!=(Student const &otherStudent);
 
+        std::string getSerializable();
+
 private:
         std::string major;
         double gpa;

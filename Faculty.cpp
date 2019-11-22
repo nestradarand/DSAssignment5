@@ -107,3 +107,15 @@ int Faculty::getAdviseeNumber()
 {
     return advisees ->getSize();
 }
+string Faculty::getSerializable()
+{
+    string returner = (to_string(this->id) + "," +
+                       this->name + "," + this->level +
+                       this->department);
+    int *adviseeIds = this ->returnAllAdvisees();
+    int adviseeLength = this ->getAdviseeNumber();
+    returner = returner + ","+ to_string(adviseeLength);
+    for(int i =0; i <adviseeLength;++i)
+        returner = (returner + ","+to_string(adviseeIds[i]));
+    return returner;
+}
