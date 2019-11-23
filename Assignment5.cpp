@@ -14,20 +14,22 @@ int main(int argc, char** argv)
     TextChecker textHelper;
     ExtendedTree<Faculty*> *facultyTree = new ExtendedTree<Faculty*>();
     ExtendedTree<Student*> *studentTree = new ExtendedTree<Student*>();
-    Student *thestud = new Student(45,"Noah","Senior","Data Analytics",4.0,555);
-    Student *newStud = new Student(44,"Isabel","junior","PR and AD",4.0,445);
-    studentTree -> insert(newStud);
-    studentTree -> insert(thestud);
+    
 
-    Faculty *teacher2 = new Faculty(555,"Jerry Seinfeld","professor","Schmid");
-    teacher2 ->addAdvisee(thestud ->getId());
-    Faculty *teacher = new Faculty(445,"Larry","Crean");
-    teacher->addAdvisee(newStud->getId());
-    facultyTree -> insert(teacher);
-    facultyTree -> insert(teacher2);
+    //Reading in existing data
+    ifstream inStudentfile,inFacultyFile;
+    inStudentfile.open("studentTable.txt");
+    inFacultyFile.open("facultyTable.txt");
+    if(!inStudentfile)
+        cout << "**Error finding saved data for students, new file will be created to store database**\n**New database created**"<<endl;
+    if(!inFacultyFile)
+        cout << "**Error finding saved data for faculty members, new file will be created to store database**\n**New database created**"<<endl;
+    ///reading in all serialized data
 
 
 
+    inStudentfile.close();
+    inFacultyFile.close();
     cout <<"Welcome to the student and faculty cataloging system"<< endl;
     string theMenu = ("Available Commands:\n1. Print all students and their information"
                       "\n2. Print all faculty and their information"
@@ -501,6 +503,8 @@ int main(int argc, char** argv)
                 {
                     facultyTree->write(facultyFile);
                     studentTree->write(studentFile);
+                    facultyFile.close();
+                    studentFile.close();
                     cout << "Program closed and data saved." << endl;
                     break;
                 }
