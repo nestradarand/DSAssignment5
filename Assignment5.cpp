@@ -5,9 +5,11 @@
 #include "Faculty.h"
 #include "ExtendedTree.h"
 #include "TextChecker.h"
+#include "DLQueue.h"
 
 using namespace std;
 
+void putDataInQueue(string str,DLQueue<string> *queue);
 
 int main(int argc, char** argv)
 {
@@ -24,9 +26,36 @@ int main(int argc, char** argv)
         cout << "**Error finding saved data for students, new file will be created to store database**\n**New database created**"<<endl;
     if(!inFacultyFile)
         cout << "**Error finding saved data for faculty members, new file will be created to store database**\n**New database created**"<<endl;
-    ///reading in all serialized data
+    ///reading in all serialized data`
+    
+    string fileInput;
 
+    DLQueue<string> *fileQueue = new DLQueue<string>();
+    //read in student data
+    while(getline(inStudentfile,fileInput))
+    {
+        try
+        {
+            int id, advisorId;
+            double gpa;
+            string name, level, major;
+            putDataInQueue(fileInput, fileQueue);         
+            id = std::stoi(fileQueue->dequeue());
+            name = fileQueue->dequeue();
+            level = fileQueue->dequeue();
+            major = fileQueue->dequeue();
+            gpa = std::stod(fileQueue->dequeue());
+            advisorId = std::stoi(fileQueue->dequeue());
+            Student *newStud = new Student(id,name,level,major,gpa,advisorId);
+            studentTree ->insert(newStud);
+        }
+        catch (std::exception e)
+        {
+            cout << "Error reading in student data"<<endl;
+            continue;
+        }
 
+    }
 
     inStudentfile.close();
     inFacultyFile.close();
@@ -524,4 +553,18 @@ int main(int argc, char** argv)
     delete facultyTree;
     delete studentTree;
     return 0;
+}
+
+void putDataInQueue(string str, DLQueue<string> *queue)
+{
+    string delimiter = ",";
+    ////from reference stack overflow
+    int pos = 0;
+    string newData;
+    while ((pos = str.find(delimiter)) != std::string::npos)
+    {
+        newData = str.substr(0, pos);
+        queue ->enqueue(newData);
+        str.erase(0, pos + delimiter.length());
+    }
 }

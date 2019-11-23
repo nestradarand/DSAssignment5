@@ -1,2 +1,0 @@
-445,Larry,Crean,N/A,2,44,500000
-555,Jerry Seinfeld,professor,Schmid,1,45

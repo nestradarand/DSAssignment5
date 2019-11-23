@@ -117,5 +117,6 @@ string Faculty::getSerializable()
     returner = returner + ","+ to_string(adviseeLength);
     for(int i =0; i <adviseeLength;++i)
         returner = (returner + ","+to_string(adviseeIds[i]));
+    returner = returner + ",";
     return returner;
 }
