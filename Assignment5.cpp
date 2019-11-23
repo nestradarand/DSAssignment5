@@ -54,9 +54,34 @@ int main(int argc, char** argv)
             cout << "Error reading in student data"<<endl;
             continue;
         }
-
     }
-
+    while (getline(inFacultyFile, fileInput))
+    {
+        try
+        {
+            int id, numAdvisees;
+            string name, level, department;
+            putDataInQueue(fileInput, fileQueue);
+            id = std::stoi(fileQueue->dequeue());
+            name = fileQueue->dequeue();
+            level = fileQueue->dequeue();
+            department = fileQueue->dequeue();
+            numAdvisees =std::stoi(fileQueue->dequeue());
+            Faculty *newFac = new Faculty(id,name,level,department);
+            for(int i =0; i <numAdvisees;++i)
+            {
+                newFac ->addAdvisee(std::stoi(fileQueue ->dequeue()));
+            }
+            facultyTree->insert(newFac);
+        }
+        catch (std::exception e)
+        {
+            cout << "Error reading in student data" << endl;
+            continue;
+        }
+    }
+    
+    delete fileQueue;
     inStudentfile.close();
     inFacultyFile.close();
     cout <<"Welcome to the student and faculty cataloging system"<< endl;
@@ -71,7 +96,7 @@ int main(int argc, char** argv)
                       "\n9. Add a new faculty member"
                       "\n10. Delete a faculty member using their faculty id"
                       "\n11. Change students advisor given their student id and new faculty id"
-                      "\n12. Remove an advisee froma faculty member given their id"
+                      "\n12. Remove an advisee from a faculty member given their id"
                       "\n13. Rollback"
                       "\n14. Exit");
     cout << theMenu <<endl;
@@ -80,7 +105,7 @@ int main(int argc, char** argv)
     double inDub;
     while(true)
     {
-        cout << "Enter new command.\nEnter '0' to display options" << endl;
+        cout << "----Enter new command----\nEnter '0' to display options" << endl;
         getline(cin>>ws,holder);
         if(textHelper.isPositiveInteger(holder))
         {
@@ -154,7 +179,7 @@ int main(int argc, char** argv)
                         if (facResult)
                         {
                             cout << "-----Advisor Information:-----" << endl;
-                            cout << facResult->toString();
+                            cout << facResult->toString()<<endl;;
                         }
                         else
                             cout << "***Advisor number stored for student not found***" << endl;
@@ -181,6 +206,7 @@ int main(int argc, char** argv)
                             int numAdvisees = tempFac->getAdviseeNumber();
                             int *theAdvisees = tempFac->returnAllAdvisees();
                             Student *finder;
+                            cout <<"---Advisees---"<<endl;
                             for (int i = 0; i < numAdvisees; ++i)
                             {
                                 finder = new Student(theAdvisees[i]);
@@ -398,7 +424,7 @@ int main(int argc, char** argv)
                                 }
                             }
                             if (success)
-                                cout << "Advisees passed on to next available faculty member" << endl;
+                                cout << "*Advisees re-assigned to next available faculty member*" << endl;
                         }
                         if (success)
                         {
@@ -491,7 +517,7 @@ int main(int argc, char** argv)
                                     {
                                         result->setAdvisorId(tempFac->getId());
                                         tempFac->addAdvisee(tempStud->getId());
-                                        cout << "Advissee successfully removed from list and reassigned to next available faculty." << endl;
+                                        cout << "Advisee successfully removed from list and reassigned to next available faculty." << endl;
                                         cout << "New assigned advisor: \n"
                                              << facultyTree->search(tempFac)->toString() << endl;
                                     }
