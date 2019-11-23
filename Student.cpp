@@ -107,7 +107,7 @@ Student::~Student(){
 string Student::getSerializable()
 {
     string returner = (to_string(this->id) + "," + 
-                       this->name + "," + this ->level + 
+                       this->name + "," + this ->level + ","+ 
                        this ->major + "," + to_string(this->gpa)+
                        "," + to_string(this->advisorId));
     return returner;

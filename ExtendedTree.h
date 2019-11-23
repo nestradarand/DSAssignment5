@@ -4,6 +4,8 @@
 #include "Student.h"
 #include "Faculty.h"
 #include <cstddef>
+#include <iostream>
+#include <fstream>
 
 template <typename T>
 class ExtendedTree: public BST<T>
@@ -16,12 +18,14 @@ class ExtendedTree: public BST<T>
         T search(T entry);
         T getEntryOtherThan(T value);
         bool deleteNode(T entry);
+        void write(std::ofstream &stream);
     
 
     private:
         void printFullNodes(TreeNode<T> *root);
         T privateGetEntryOtherThan(T entry);
         TreeNode<T> *getSuccessor(TreeNode<T> *d);
+        void recursiveWriteAll(TreeNode<T> *node,std::ofstream &stream);
 };
 #endif
 template <typename T>
@@ -237,4 +241,21 @@ TreeNode<T> *ExtendedTree<T>::getSuccessor(TreeNode<T> *d)
         successor->right = d->right;
     }
     return successor;
+}
+template <typename T>
+void ExtendedTree<T>::write(std::ofstream &stream)
+{
+    recursiveWriteAll(this->root,stream);
+}
+template <typename T>
+void ExtendedTree<T>::recursiveWriteAll(TreeNode<T> *node,std::ofstream &stream)
+{
+    if(node != NULL)
+    {
+        stream << node->key->getSerializable() << "\r\n";
+        recursiveWriteAll(node ->right,stream);
+        recursiveWriteAll(node ->left,stream);
+    }
+    else    
+        return;
 }

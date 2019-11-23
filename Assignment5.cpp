@@ -489,8 +489,24 @@ int main(int argc, char** argv)
             }
             else if (inNum == 14)
             {
-                cout << "Program closed and data saved." << endl;
-                break;
+                ofstream facultyFile,studentFile;
+                facultyFile.open("facultyTable.txt");
+                studentFile.open("studentTable.txt");
+                if(!facultyFile && !studentFile)
+                {
+                    cout << "Error saving to files" << endl;
+                    break;
+                }
+                else 
+                {
+                    facultyTree->write(facultyFile);
+                    studentTree->write(studentFile);
+                    cout << "Program closed and data saved." << endl;
+                    break;
+                }
+            
+                
+               
             }
             else if (inNum == 0)
                 cout << theMenu << endl;
