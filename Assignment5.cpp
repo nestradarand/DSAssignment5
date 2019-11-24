@@ -6,16 +6,20 @@
 #include "ExtendedTree.h"
 #include "TextChecker.h"
 #include "DLQueue.h"
+#include "RollbackRecord.h"
+#include "DataParser.h"
+#include "GenStack.h"
 
 using namespace std;
 
-void putDataInQueue(string str,DLQueue<string> *queue);
+
 
 int main(int argc, char** argv)
 {
     TextChecker textHelper;
     ExtendedTree<Faculty*> *facultyTree = new ExtendedTree<Faculty*>();
     ExtendedTree<Student*> *studentTree = new ExtendedTree<Student*>();
+    DataParser *parser = new DataParser();
     
 
     //Reading in existing data
@@ -34,51 +38,21 @@ int main(int argc, char** argv)
     //read in student data
     while(getline(inStudentfile,fileInput))
     {
-        try
-        {
-            int id, advisorId;
-            double gpa;
-            string name, level, major;
-            putDataInQueue(fileInput, fileQueue);         
-            id = std::stoi(fileQueue->dequeue());
-            name = fileQueue->dequeue();
-            level = fileQueue->dequeue();
-            major = fileQueue->dequeue();
-            gpa = std::stod(fileQueue->dequeue());
-            advisorId = std::stoi(fileQueue->dequeue());
-            Student *newStud = new Student(id,name,level,major,gpa,advisorId);
+        parser -> putDataInQueue(fileInput,fileQueue);
+        Student *newStud = parser -> getStudentFromDataQueue(fileQueue);
+        if(newStud)
             studentTree ->insert(newStud);
-        }
-        catch (std::exception e)
-        {
-            cout << "Error reading in student data"<<endl;
-            continue;
-        }
+        else 
+            cout << "**Error reading in student data**"<<endl;
     }
     while (getline(inFacultyFile, fileInput))
     {
-        try
-        {
-            int id, numAdvisees;
-            string name, level, department;
-            putDataInQueue(fileInput, fileQueue);
-            id = std::stoi(fileQueue->dequeue());
-            name = fileQueue->dequeue();
-            level = fileQueue->dequeue();
-            department = fileQueue->dequeue();
-            numAdvisees =std::stoi(fileQueue->dequeue());
-            Faculty *newFac = new Faculty(id,name,level,department);
-            for(int i =0; i <numAdvisees;++i)
-            {
-                newFac ->addAdvisee(std::stoi(fileQueue ->dequeue()));
-            }
-            facultyTree->insert(newFac);
-        }
-        catch (std::exception e)
-        {
-            cout << "Error reading in student data" << endl;
-            continue;
-        }
+        parser->putDataInQueue(fileInput, fileQueue);
+        Faculty *newFac = parser->getFacultyFromDataQueue(fileQueue);
+        if(newFac)
+            facultyTree ->insert(newFac);
+        else 
+            cout <<"**Error reading in faculty data**"<<endl;
     }
     
     delete fileQueue;
@@ -103,6 +77,7 @@ int main(int argc, char** argv)
     string holder;
     int inNum;
     double inDub;
+    GenStack<RollbackRecord*> *rollbackStack = new GenStack<RollbackRecord*>();
     while(true)
     {
         cout << "----Enter new command----\nEnter '0' to display options" << endl;
@@ -272,10 +247,12 @@ int main(int argc, char** argv)
                                                 Student *tempNewStud = new Student(newId, newName, newLevel, newMajor, newGpa, newAdvisorId);
                                                 studentTree->insert(tempNewStud);
                                                 theAdvisor->addAdvisee(tempNewStud->getId());
+                                                RollbackRecord *newRec = new RollbackRecord(true, to_string(tempNewStud->getId()), 'd');
+                                                rollbackStack->push(newRec);
                                                 cout << "Student successfully saved to system" << endl;
                                                 cout << "---New Student Profile---\n"
                                                      << tempNewStud->toString() << endl;
-                                                ////rollback functionality goes here
+                                                
                                             }
                                             else
                                                 cout << "***Advisor with that ID was not found, command aborted***" << endl;
@@ -317,14 +294,16 @@ int main(int argc, char** argv)
                         Faculty *found = facultyTree->search(finder);
                         if (found)
                         {
+                            string oldInfo = tempStud ->getSerializable();
                             if (studentTree->deleteNode(tempStud))
                             {
-                                cout << "--Student successfully deleted--" << endl;
                                 if (found->removeAdvisee(studId))
                                     cout << "Student removed from " << found->getName() << "'s advisee list" << endl;
                                 else
                                     cout << "***Error removing student from advisor's advisee list***" << endl;
-                                ////need to store the rollback call here
+                                RollbackRecord *newRecord = new RollbackRecord(true,oldInfo,'a');
+                                rollbackStack ->push(newRecord);
+                                cout << "--Student successfully deleted--" << endl;
                             }
                         }
                         else
@@ -368,6 +347,8 @@ int main(int argc, char** argv)
                                     newDepartment = holder;
                                     Faculty *newFac = new Faculty(newId, newName, newLevel, newDepartment);
                                     facultyTree->insert(newFac);
+                                    RollbackRecord *newRec = new RollbackRecord(false,to_string(newFac->getId()),'d');
+                                    rollbackStack ->push(newRec);
                                     cout << "New faculty member successfully added to the database" << endl;
                                     cout << "---New Faculty Profile Info---\n"
                                          << newFac->toString() << endl;
@@ -423,13 +404,19 @@ int main(int argc, char** argv)
                                     break;
                                 }
                             }
+                            delete finder;
                             if (success)
                                 cout << "*Advisees re-assigned to next available faculty member*" << endl;
                         }
                         if (success)
                         {
+                            string facInfo = tempFac ->getSerializable();
                             if (facultyTree->deleteNode(searcher))
+                            {
+                                RollbackRecord *afterInfo = new RollbackRecord(false,facInfo,'a');
+                                rollbackStack ->push(afterInfo);
                                 cout << "--Faculty member effectively deleted--" << endl;
+                            }
                             else
                                 cout << "***Error deleting faculty member***" << endl;
                         }
@@ -438,7 +425,6 @@ int main(int argc, char** argv)
                     }
                     else
                         cout << "***Faculty member with that ID number not found***" << endl;
-                    delete finder;
                     delete searcher;
                 }
                 else 
@@ -544,6 +530,112 @@ int main(int argc, char** argv)
                 else 
                     cout <<"***Invalid Id entered***"<<endl;                
             }
+            else if (inNum == 13)
+            {
+                //gets the most recent action
+                if(!rollbackStack ->isEmpty())
+                {
+                    RollbackRecord *lastAction = rollbackStack->pop();
+                    ///if the last alteration concerns a student record
+                    DLQueue<string> *helperQueue = new DLQueue<string>();
+                    string serialized = lastAction->data;
+                    parser->putDataInQueue(serialized, helperQueue);
+                    if (lastAction->action == 'a')
+                    {
+                        if (lastAction->isStudent == true)
+                        {
+                            Student *redo = parser->getStudentFromDataQueue(helperQueue);
+                            if (redo)
+                            {
+                                studentTree->insert(redo);
+                                Faculty *finder = new Faculty(redo->getAdvisorId());
+                                Faculty *priorAdvisor = facultyTree->search(finder);
+                                priorAdvisor->addAdvisee(redo->getId());
+                                cout << "--Student successfully readded to the database--" << endl;
+                                delete finder;
+                            }
+                            else
+                                cout << "**Error attempting to undo student deletion**" << endl;
+                        }
+                        else
+                        {
+                            Faculty *redo = parser->getFacultyFromDataQueue(helperQueue);
+                            if (redo)
+                            {
+                                facultyTree->insert(redo);
+                                cout << "--Faculty effectively re-added to the database--" << endl;
+                            }
+                            else
+                                cout << "**Error attempting to undo faculty deletion**" << endl;
+                        }
+                    }
+                    else if (lastAction->action == 'd')
+                    {
+                        if (lastAction->isStudent == true)
+                        {
+                            int redoId = std::stoi(lastAction ->data);
+                            if (redoId)
+                            {
+                                Student *temp = new Student(redoId);
+                                Student *found = studentTree ->search(temp);
+                                Faculty *finder = new Faculty(found ->getAdvisorId());
+                                Faculty *priorAdvisor = facultyTree->search(finder);
+                                priorAdvisor->removeAdvisee(redoId);
+                                studentTree->deleteNode(temp);  
+                                delete temp;
+                                delete finder;
+                                cout << "--Student successfully un-added to the database--" << endl;
+                            }
+                            else
+                                cout << "**Error attempting to undo student addition**" << endl;
+                        }
+                        else
+                        {
+                            Faculty *redo = new Faculty(std::stoi(lastAction->data));
+                            Faculty *found = facultyTree ->search(redo);
+                            delete redo;
+                            if (found)
+                            {
+                                int numAdvisees = found ->getAdviseeNumber();
+                                int *advisees = found ->returnAllAdvisees();
+                                Student *temp,*finder;
+                                Faculty *replacement = facultyTree->getEntryOtherThan(found);
+                                if(replacement)
+                                {
+                                    for (int i = 0; i < numAdvisees; ++i)
+                                    {
+                                        finder = new Student(advisees[i]);
+                                        temp = studentTree -> search(finder); 
+                                        if (replacement)
+                                        {
+                                            temp->setAdvisorId(replacement->getId());
+                                            replacement->addAdvisee(temp->getId());
+                                            found->removeAdvisee(advisees[i]);
+                                        }
+                                        delete finder;
+                                    }
+                                    facultyTree->deleteNode(found);
+                                    cout << "--Faculty effectively un-added to the database--" << endl;
+                                }
+                                else
+                                {
+                                    cout << "***No suitable advisors available to take on remaining students, operation aborted***" << endl;
+                                }                                
+                            }
+                            else
+                                cout << "**Error attempting to undo faculty addition**" << endl;
+                        }
+                    }
+                    else
+                        cout << "**Unknown error in attempting to undo last alteration to database**" << endl;
+
+                    delete lastAction;
+                    cout << "---Previous database alteration undone---" << endl;
+                }
+                else 
+                    cout <<"**No changes in current session left to undo**"<<endl;
+                
+            }
             else if (inNum == 14)
             {
                 ofstream facultyFile,studentFile;
@@ -575,22 +667,9 @@ int main(int argc, char** argv)
     }
 
     
-
+    delete rollbackStack;
     delete facultyTree;
     delete studentTree;
+    delete parser;
     return 0;
-}
-
-void putDataInQueue(string str, DLQueue<string> *queue)
-{
-    string delimiter = ",";
-    ////from reference stack overflow
-    int pos = 0;
-    string newData;
-    while ((pos = str.find(delimiter)) != std::string::npos)
-    {
-        newData = str.substr(0, pos);
-        queue ->enqueue(newData);
-        str.erase(0, pos + delimiter.length());
-    }
 }
