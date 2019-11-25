@@ -1,37 +1,53 @@
+/*
+Name: Noah Estrada-Rand
+Student ID#: 2272490
+Chapman email: estra146@mail.chapman.edu
+Course Number and Section: CPSC-350-01
+Assignment: Assignment 5 Advisor/Student Database
+*/
 #ifndef DOUBLYLINKEDLIST_H
 #define DOUBLYLINKEDLIST_H
 #include "DoubleListNode.h"
 #include <cstddef>
 #include <iostream>
 
+//list functionality using doubly linked implementation
 
 template <typename T>
 class DoublyLinkedList
 {
 private:
+  //member variables referecning the front and back of the list and the size of the list
     DoubleListNode<T> *front;
     DoubleListNode<T> *back;
     unsigned int size;
 public:
+  //constructor and destructor
     DoublyLinkedList();
     ~DoublyLinkedList();
-
+    //inserting values to front or back of the list
     void insertFront(T newEntry);
     void insertBack(T newEntry);
+    //removing values from from or back of the list
     T removeBack();
     T removeFront();
+    //returns the front/back of the list
     T getFront();
     T getBack();
     //finds index based on the entry
     int find(T entry);
+    //removes an entry based on the instance passed to it
     bool remove(T entry);
-
+    //indicates if the list is empty or not
     bool isEmpty();
+    //prints contents of the list
     void printList();
+    //returns the size of the list
     unsigned int getSize();
 };
 
-//implementation
+
+//default constructor
 template <typename T>
 DoublyLinkedList<T>::DoublyLinkedList()
 {
@@ -39,12 +55,14 @@ DoublyLinkedList<T>::DoublyLinkedList()
   front = NULL;
   back = NULL;
 }
+//destructor
 template <typename T>
 DoublyLinkedList<T>::~DoublyLinkedList()
 {
   while(!isEmpty())
     removeFront();
 }
+//inserts instance to front of the list
 template <typename T>
 void DoublyLinkedList<T>::insertFront(T newEntry)
 {
@@ -63,6 +81,7 @@ void DoublyLinkedList<T>::insertFront(T newEntry)
   size ++;
 
 }
+//removes instance from the front of the list and returns it
 template <typename T>
 T DoublyLinkedList<T>::removeFront()
 {
@@ -84,6 +103,7 @@ T DoublyLinkedList<T>::removeFront()
   size -- ;
   return holder;
 }
+//inserts instance to the back of the list
 template <typename T>
 void DoublyLinkedList<T>::insertBack(T newEntry)
 {
@@ -101,6 +121,7 @@ void DoublyLinkedList<T>::insertBack(T newEntry)
 
   size ++;
 }
+//removes instance and returns it from the back of the list
 template <typename T>
 T DoublyLinkedList<T>::removeBack()
 {
@@ -123,7 +144,7 @@ T DoublyLinkedList<T>::removeBack()
 
   return temp;
 }
-//need to as if this is even necessary
+//removes an instance by searching for it then removing it
 template <typename T>
 bool DoublyLinkedList<T>::remove(T data)
 {
@@ -160,11 +181,13 @@ bool DoublyLinkedList<T>::remove(T data)
   delete current;
   return true;
 }
+//returns if the list is empty
 template <typename T>
 bool DoublyLinkedList<T>::isEmpty()
 {
   return size == 0;
 }
+//prints all contents
 template <typename T>
 void DoublyLinkedList<T>::printList()
 {
@@ -175,11 +198,13 @@ void DoublyLinkedList<T>::printList()
     current = current -> next;
   }
 }
+//returns the length of the list
 template <typename T>
 unsigned int DoublyLinkedList<T>::getSize()
 {
   return size;
 }
+//finds an entry and returns its index in the list
 template <typename T>
 int DoublyLinkedList<T>::find(T entry)
 {
@@ -196,51 +221,17 @@ int DoublyLinkedList<T>::find(T entry)
     index = -1;
   return index;  
 }
+//returns instance at the front of the list
 template <typename T>
 T DoublyLinkedList<T>::getFront()
 {
   return front ->data;
 }
+//returns the instance at the back of the list
 template <typename T>
 T DoublyLinkedList<T>::getBack()
 {
   return back -> data;
 }
-//needs work do we even need it???
-// template <typename T>
-// T DoublyLinkedList<T>::deletePos(int position)
-// {
-//     if(size == 0)
-//       throw std::runtime_error("List is empty");
-//     int index = 0;
-//     DoubleListNode<T> *current = front;
-//     DoubleListNode<T> *previous = front;
-//     //if the first node is to be deleted
-//     if(position == index)
-//     {
-//       previous = NULL;
-//       front = current ->next;
-//       current -> next -> prev = NULL;
-//       current -> next -> NULL;
-//     }
-//     else
-//     {
-//       while(index != position)
-//       {
-//         previous = current;
-//         current = current -> next;
-//         index ++;
-//       }
-//       previous ->next = current -> next;
-//       //to avoid the next in line node
-//       current -> next = NULL;
-//     }
-    
-//     T returner = current -> data;  
-//     size -- ;
-//     previous = NULL;
-//     delete previous;
-//     delete current;
-//     return returner;
-// }
+
 #endif

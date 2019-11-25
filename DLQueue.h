@@ -3,7 +3,7 @@ Name: Noah Estrada-Rand
 Student ID#: 2272490
 Chapman email: estra146@mail.chapman.edu
 Course Number and Section: CPSC-350-01
-Assignment: Assignment 4 Registrar Simulation
+Assignment: Assignment 5 Student/Faculty DataBase
 */
 #ifndef DLQUEUE_H
 #define DLQUEUE_H

@@ -1,3 +1,10 @@
+/*
+Name: Noah Estrada-Rand
+Student ID#: 2272490
+Chapman email: estra146@mail.chapman.edu
+Course Number and Section: CPSC-350-01
+Assignment: Assignment 5 Advisor/Student Database
+*/
 #include "Student.h"
 #include <iostream>
 #include <string>
@@ -104,6 +111,7 @@ bool Student::operator<=(Student const &otherStudent)
 }
 Student::~Student(){
 }
+//returns serializable information in csv format for given student
 string Student::getSerializable()
 {
     string returner = (to_string(this->id) + "," + 

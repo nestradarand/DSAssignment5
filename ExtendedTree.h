@@ -1,3 +1,10 @@
+/*
+Name: Noah Estrada-Rand
+Student ID#: 2272490
+Chapman email: estra146@mail.chapman.edu
+Course Number and Section: CPSC-350-01
+Assignment: Assignment 5 Advisor/Student Database
+*/
 #ifndef EXTENDED_TREE
 #define EXTENDED_TREE
 #include "BST.h"
@@ -7,33 +14,47 @@
 #include <iostream>
 #include <fstream>
 
+//This tree serves to extend the BST to a more specialized version to meet the demands of cataloging
+//Students and Facutly objects
+
 template <typename T>
 class ExtendedTree: public BST<T>
 {
     public:
+        //default construtctor
         ExtendedTree();
-        // ~ExtendedTree();
+        //prints nodes in their entirety using toString method
         void printToStrings();
+        //basic insertion of new value
         void insert(T value);
+        //returns instance of stored value if found
         T search(T entry);
+        //returns any entry other than the one entered (used to find new advisors)
         T getEntryOtherThan(T value);
+        //delets a node containing instance equivalent to that passed as argument
         bool deleteNode(T entry);
+        //writes contents of all nodes in serializable form to a given filestream
         void write(std::ofstream &stream);
     
 
     private:
+        //prints all nodes using toString method recursively
         void printFullNodes(TreeNode<T> *root);
+        //finds entry other than argument 
         T privateGetEntryOtherThan(T entry);
+        //finds succeesor for a node that will be deleted
         TreeNode<T> *getSuccessor(TreeNode<T> *d);
+        //writes all nodes to specified filestream recursively
         void recursiveWriteAll(TreeNode<T> *node,std::ofstream &stream);
 };
 #endif
+//default constructor
 template <typename T>
 ExtendedTree<T>::ExtendedTree(): BST<T>()
 {
 
 }
-//works
+//prints all nodes' data using their toString method, to be used in public scope
 template <typename T>
 void ExtendedTree<T>::printToStrings()
 {
@@ -42,7 +63,7 @@ void ExtendedTree<T>::printToStrings()
     else
         std::cout << "There is nothing stored to print out" << std::endl;
 }
-//works
+//prints all nodes recursively using toString, prints inorder
 template <typename T>
 void ExtendedTree<T>::printFullNodes(TreeNode<T> *root)
 {
@@ -55,7 +76,7 @@ void ExtendedTree<T>::printFullNodes(TreeNode<T> *root)
     else
         return;
 }
-//works
+//inserts value same as regular BST but instead uses overloaded operators
 template <typename T>
 void ExtendedTree<T>::insert(T value)
 {
@@ -92,6 +113,7 @@ void ExtendedTree<T>::insert(T value)
             break;
     }
 }
+//works the same as normal BST search function but instead uses overloaded operators
 template <typename T>
 T ExtendedTree<T>::search(T value)
 {
@@ -110,12 +132,13 @@ T ExtendedTree<T>::search(T value)
     }
     return current->key; //happens if the value was found which would have broken the loop above
 }
+//public method to get entry other than the one passed as an argument
 template <typename T>
 T ExtendedTree<T>::getEntryOtherThan(T entry)
 {
     return privateGetEntryOtherThan(entry);
 }
-//works
+//returns next available entry looking at the root and its children
 template <typename T>
 T ExtendedTree<T>::privateGetEntryOtherThan(T entry)
 {
@@ -138,6 +161,7 @@ T ExtendedTree<T>::privateGetEntryOtherThan(T entry)
         return current->key; //happens if the value was found which would have broken the loop above
     }
 }
+//deletes a node given a value, works the sam as normal delete but instead uses overloaded operators
 template <typename T>
 bool ExtendedTree<T>::deleteNode(T value)
 {
@@ -219,9 +243,12 @@ bool ExtendedTree<T>::deleteNode(T value)
             parent->right = successor;
         successor->left = current->left;
     }
+    current->right = nullptr;
+    current->left = nullptr;
+    delete current;
     return true;
 }
-
+//returns the sucessor of a node to be deleted, does so using overloaded operators
 template <typename T>
 TreeNode<T> *ExtendedTree<T>::getSuccessor(TreeNode<T> *d)
 {
@@ -242,11 +269,13 @@ TreeNode<T> *ExtendedTree<T>::getSuccessor(TreeNode<T> *d)
     }
     return successor;
 }
+//public method to begin recursive writing process for all nodes
 template <typename T>
 void ExtendedTree<T>::write(std::ofstream &stream)
 {
     recursiveWriteAll(this->root,stream);
 }
+//writes all nodes recursively using pre order traversal; writes serializable info from all instances
 template <typename T>
 void ExtendedTree<T>::recursiveWriteAll(TreeNode<T> *node,std::ofstream &stream)
 {

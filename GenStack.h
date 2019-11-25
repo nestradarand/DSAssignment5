@@ -1,3 +1,10 @@
+/*
+Name: Noah Estrada-Rand
+Student ID#: 2272490
+Chapman email: estra146@mail.chapman.edu
+Course Number and Section: CPSC-350-01
+Assignment: Assignment 5 Advisor/Student Database
+*/
 #ifndef GENSTACK_H
 #define GENSTACK_H
 

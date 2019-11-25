@@ -1,17 +1,31 @@
+/*
+Name: Noah Estrada-Rand
+Student ID#: 2272490
+Chapman email: estra146@mail.chapman.edu
+Course Number and Section: CPSC-350-01
+Assignment: Assignment 5 Advisor/Student Database
+*/
 #ifndef BST_H
 #define BST_H
 #include "TreeNode.h"
 #include <cstddef>
 #include <iostream>
 
+//Basic template binary search tree used to store and find data
+
 template <typename T>
 class BST
 {
 public:
+    //default constructor
     BST();
+    //destructor
     ~BST();
+    //searches for given instance of store value
     T search(T value);
+    //inserts an instance of a given type
     void insert(T value);
+    //delete a node of an instance if it exists
     bool deleteNode(T value);
 
     //helpers
@@ -22,35 +36,40 @@ public:
     void recPrint(TreeNode<T> *node);
     //prints the values of the tree in order
     void printInOrder();
+    //gets node to succeed a node that will be deleted
     TreeNode<T> *getSuccessor(TreeNode<T> *d);
-    //prints all the to string methods for a given tree
-
+protected:
+    //stores the root of the tree
     TreeNode<T> *root;
-    void printFullNodes(TreeNode<T> *root);
 };
 #endif
 
+//default constructor
 template <typename T>
 BST<T>::BST()
 {
     root = NULL;
 }
+//destructor to delete root node which will cause chain effect and delete all nodes
 template <typename T>
 BST<T>::~BST()
 {
     if(root != NULL)
         delete root;
 }
-//up to us in this case
-////something wrong
+//recursively prints all contents of the tree given an initial node in order
 template <typename T>
 void BST<T>::recPrint(TreeNode<T> *node)
 {
+    //if node is not null then print through it and its childrens' nodes
     if(node != NULL)
     {
+        //print left child
         if(node -> left != NULL)
             recPrint(node->left);
+        //print current node
         std::cout << node->key << std::endl;
+        //print right child
         if(node -> right != NULL)
             recPrint(node->right);
     }
@@ -60,17 +79,18 @@ void BST<T>::recPrint(TreeNode<T> *node)
     }
         
 }
-//works
+//public method to be used to print nodes in order
 template <typename T>
 void BST<T>::printInOrder()
 {
     recPrint(root);
 }
-//works
+//gets the maximum value in the current tree
 template <typename T>
 TreeNode<T> *BST<T>::getMax()
 {
     TreeNode<T> *current = root;
+    //keep getting the right child until not possible
     if (current == NULL)
         return NULL;
     while (current->right != NULL)
@@ -80,10 +100,12 @@ TreeNode<T> *BST<T>::getMax()
     return current;
     //or need to use return &(current -> key) to return address of the data
 }
+//gets minimum value stored in the tree
 template <typename T>
 TreeNode<T> *BST<T>::getMin()
 {
     TreeNode<T> *current = root;
+    //continue getting left child until no longer possible
     if (current == NULL)
         return NULL;
     while (current->left != NULL)
@@ -93,10 +115,11 @@ TreeNode<T> *BST<T>::getMin()
     return current;
     //or need to use return &(current -> key) to return address of the data
 }
-//works
+//inserts an instance as a new ned in the tree
 template <typename T>
 void BST<T>::insert(T value)
 {
+    //makes new node and checks to see if there are any nodes to begin with
     TreeNode<T> *newNode = new TreeNode<T>(value);
     if (root == NULL)
         root = newNode;
@@ -105,6 +128,7 @@ void BST<T>::insert(T value)
     TreeNode<T> *parent = NULL;
     //will run until the current node value is NULL, that way we can place the new node at that location
     //works by updating the parent to the current node then the if values move us down the tree
+    //breaks when null leaf found for insertion
     while (true)
     {
         parent = current;
@@ -130,13 +154,16 @@ void BST<T>::insert(T value)
             break;
     }
 }
+//takes an instance and searches the tree for equivalent node
 template <typename T>
 T BST<T>::search(T value)
 {
+    //if there are no nodes in the tree return null
     if (root == NULL)
         return NULL;
     //tree is not empty; let's look
     TreeNode<T> *current = root;
+    //keeps updating current node to the left or right node based on its comparison to the current node
     while (current ->key != value)
     {
         if (value < current->key)
@@ -149,15 +176,17 @@ T BST<T>::search(T value)
     return current ->key; //happens if the value was found which would have broken the loop above
 }
 
-//works
+//delete node by searching for a node with equivalent value to that passed as argument, and then removes the node
 template <typename T>
 bool BST<T>::deleteNode(T value)
 {
+    //if no nodes are stored return false
     if (root == NULL)
         return false;
 
     TreeNode<T> *current = root;
     TreeNode<T> *parent = root;
+    //checks to see if the node to be deleted is a left child
     bool isLeft = true;
     while (current->key != value)
     {
@@ -178,7 +207,7 @@ bool BST<T>::deleteNode(T value)
         }
     }
     //if we make it here then we found the node with the value to be deleted
-    //if it has no non null children(leafnode)
+    //if it has no null children(leafnode)
     if (current->left == NULL && current->right == NULL)
     {
         if (current == root)
@@ -231,8 +260,13 @@ bool BST<T>::deleteNode(T value)
             parent->right = successor;
         successor->left = current->left;
     }
+    current ->right = nullptr;
+    current ->left = nullptr;
+    delete current;
+    //if node is effectively deleted
     return true;
 }
+//returns a successor for a node that will be deleted
 template <typename T>
 TreeNode<T> *BST<T>::getSuccessor(TreeNode<T> *d)
 {
