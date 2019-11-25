@@ -259,3 +259,4 @@ void ExtendedTree<T>::recursiveWriteAll(TreeNode<T> *node,std::ofstream &stream)
     else    
         return;
 }
+

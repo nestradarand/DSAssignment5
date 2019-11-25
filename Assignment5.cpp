@@ -13,6 +13,9 @@
 using namespace std;
 
 
+Student* searchByStudentId(int i,ExtendedTree<Student*> *tree);
+Faculty* searchByFacultyId(int i,ExtendedTree<Faculty*> *tree);
+
 
 int main(int argc, char** argv)
 {
@@ -102,14 +105,11 @@ int main(int argc, char** argv)
                 if(textHelper.isPositiveInteger(holder))
                 {
                     inNum = std::stoi(holder);
-                    Student *tempStudent = new Student(inNum);
-                    Student *result;
-                    result = studentTree->search(tempStudent);
+                    Student *result = searchByStudentId(inNum,studentTree);
                     if (result)
                         cout << result->toString() << endl;
                     else
                         cout << "***Student with that ID was not found***" << endl;
-                    delete tempStudent;
                 }
                 else 
                     cout << "***Invalid input entered***"<<endl;
@@ -122,14 +122,11 @@ int main(int argc, char** argv)
                 if(textHelper.isPositiveInteger(holder))
                 {
                     inNum = std::stoi(holder);
-                    Faculty *tempFac = new Faculty(inNum);
-                    Faculty *tempResult;
-                    tempResult = facultyTree->search(tempFac);
+                    Faculty *tempResult = searchByFacultyId(inNum, facultyTree);
                     if (tempResult)
                         cout << tempResult->toString() << endl;
                     else
                         cout << "***Faculty member with that ID was not found***" << endl;
-                    delete tempFac;
                 }
                 else 
                     cout<<"***Invalid ID entered***"<<endl;
@@ -142,15 +139,10 @@ int main(int argc, char** argv)
                 if (textHelper.isPositiveInteger(holder))
                 {
                     inNum = std::stoi(holder);
-                    Student *tempStud = new Student(inNum);
-                    Student *result;
-                    result = studentTree->search(tempStud);
+                    Student *result = searchByStudentId(inNum,studentTree);
                     if (result)
                     {
-                        Faculty *facResult;
-                        int advisorId = result->getAdvisorId();
-                        Faculty *searcher = new Faculty(advisorId);
-                        facResult = facultyTree->search(searcher);
+                        Faculty *facResult = searchByFacultyId(result ->getAdvisorId(),facultyTree);
                         if (facResult)
                         {
                             cout << "-----Advisor Information:-----" << endl;
@@ -172,22 +164,18 @@ int main(int argc, char** argv)
                 if(textHelper.isPositiveInteger(holder))
                 {
                     inNum = std::stoi(holder);
-                    Faculty *searchFac = new Faculty(inNum);
-                    Faculty *tempFac = facultyTree->search(searchFac);
-                    if (tempFac)
+                    Faculty *searchFac = searchByFacultyId(inNum,facultyTree);
+                    if (searchFac)
                     {
-                        if (tempFac->hasAdvisees())
+                        if (searchFac->hasAdvisees())
                         {
-                            int numAdvisees = tempFac->getAdviseeNumber();
-                            int *theAdvisees = tempFac->returnAllAdvisees();
-                            Student *finder;
+                            int numAdvisees = searchFac->getAdviseeNumber();
+                            int *theAdvisees = searchFac->returnAllAdvisees();
                             cout <<"---Advisees---"<<endl;
                             for (int i = 0; i < numAdvisees; ++i)
                             {
-                                finder = new Student(theAdvisees[i]);
-                                cout << studentTree->search(finder)->toString() << endl;
+                                cout <<searchByStudentId(theAdvisees[i],studentTree)->toString() << endl;
                             }
-                            delete finder;
                         }
                         else
                             cout << "***This advisor has no advisees***" << endl;
@@ -210,8 +198,7 @@ int main(int argc, char** argv)
                 if (textHelper.isPositiveInteger(holder))
                 {
                     newId = std::stoi(holder);
-                    Student *finder = new Student(newId);
-                    if (studentTree->search(finder))
+                    if (searchByStudentId(inNum,studentTree))
                         cout << "***Student with that ID number already exists, command failed***" << endl;
                     else
                     {
@@ -240,13 +227,12 @@ int main(int argc, char** argv)
                                         if (textHelper.isPositiveInteger(holder))
                                         {
                                             newAdvisorId = std::stoi(holder);
-                                            Faculty *searcher = new Faculty(newAdvisorId);
-                                            Faculty *theAdvisor = facultyTree->search(searcher);
-                                            if (theAdvisor)
+                                            Faculty *searcher = searchByFacultyId(newAdvisorId,facultyTree);
+                                            if (searcher)
                                             {
                                                 Student *tempNewStud = new Student(newId, newName, newLevel, newMajor, newGpa, newAdvisorId);
                                                 studentTree->insert(tempNewStud);
-                                                theAdvisor->addAdvisee(tempNewStud->getId());
+                                                searcher->addAdvisee(tempNewStud->getId());
                                                 RollbackRecord *newRec = new RollbackRecord(true, to_string(tempNewStud->getId()), 'd');
                                                 rollbackStack->push(newRec);
                                                 cout << "Student successfully saved to system" << endl;
@@ -256,7 +242,6 @@ int main(int argc, char** argv)
                                             }
                                             else
                                                 cout << "***Advisor with that ID was not found, command aborted***" << endl;
-                                            delete searcher;
                                         }
                                         else
                                             cout << "***Invalid advisor id entered, command aborted***" << endl;
@@ -284,14 +269,12 @@ int main(int argc, char** argv)
                 if(textHelper.isPositiveInteger(holder))
                 {
                     inNum = std::stoi(holder);
-                    Student *searcher = new Student(inNum);
-                    Student *tempStud = studentTree->search(searcher);
+                    Student *tempStud = searchByStudentId(inNum,studentTree);
                     if (tempStud)
                     {
                         int studId = tempStud->getId();
                         int advisorId = tempStud->getAdvisorId();
-                        Faculty *finder = new Faculty(advisorId);
-                        Faculty *found = facultyTree->search(finder);
+                        Faculty *found = searchByFacultyId(advisorId,facultyTree);
                         if (found)
                         {
                             string oldInfo = tempStud ->getSerializable();
@@ -308,11 +291,9 @@ int main(int argc, char** argv)
                         }
                         else
                             cout << "***Error in removing the student from advisor list, command aborted***" << endl;
-                        delete finder;
                     }
                     else
                         cout << "***Student with that Id not found***" << endl;
-                    delete searcher;
                 }
                 else 
                     cout <<"***Invalid ID entered***"<<endl;
@@ -327,8 +308,7 @@ int main(int argc, char** argv)
                 if (textHelper.isPositiveInteger(holder))
                 {
                     newId = std::stoi(holder);
-                    Faculty *searcher = new Faculty(newId);
-                    if (!(facultyTree->search(searcher)))
+                    if (!(searchByFacultyId(newId,facultyTree)))
                     {
                         cout << "Enter the name of the faculty member" << endl;
                         getline(cin >> ws, holder);
@@ -375,9 +355,8 @@ int main(int argc, char** argv)
                 if(textHelper.isPositiveInteger(holder))
                 {
                     inNum = std::stoi(holder);
-                    Faculty *searcher = new Faculty(inNum);
-                    Faculty *tempFac = facultyTree->search(searcher), *replacement;
-                    Student *finder, *temp;
+                    Faculty *tempFac = searchByFacultyId(inNum,facultyTree), *replacement;
+                    Student *temp;
                     bool success = true;
                     if (tempFac)
                     {
@@ -388,8 +367,7 @@ int main(int argc, char** argv)
                             adviseeArray = tempFac->returnAllAdvisees();
                             for (int i = 0; i < adviseeCount; ++i)
                             {
-                                finder = new Student(adviseeArray[i]);
-                                temp = studentTree->search(finder);
+                                temp = searchByStudentId(adviseeArray[i],studentTree);
                                 replacement = facultyTree->getEntryOtherThan(tempFac);
                                 if (replacement)
                                 {
@@ -404,13 +382,13 @@ int main(int argc, char** argv)
                                     break;
                                 }
                             }
-                            delete finder;
                             if (success)
                                 cout << "*Advisees re-assigned to next available faculty member*" << endl;
                         }
                         if (success)
                         {
                             string facInfo = tempFac ->getSerializable();
+                            Faculty *searcher = new Faculty(inNum);
                             if (facultyTree->deleteNode(searcher))
                             {
                                 RollbackRecord *afterInfo = new RollbackRecord(false,facInfo,'a');
@@ -419,13 +397,13 @@ int main(int argc, char** argv)
                             }
                             else
                                 cout << "***Error deleting faculty member***" << endl;
+                            delete searcher;
                         }
                         else
                             cout << "***Unable to delete faculty member***" << endl;
                     }
                     else
                         cout << "***Faculty member with that ID number not found***" << endl;
-                    delete searcher;
                 }
                 else 
                     cout << "***Invalid ID entered***"<<endl;                
@@ -437,8 +415,7 @@ int main(int argc, char** argv)
                 if(textHelper.isPositiveInteger(holder))
                 {
                     inNum = std::stoi(holder);
-                    Student *temp = new Student(inNum);
-                    Student *studentToEdit = studentTree->search(temp);
+                    Student *studentToEdit = searchByStudentId(inNum,studentTree);
                     if (studentToEdit)
                     {
                         cout << "Enter the id number of the new advisor for the student" << endl;
@@ -446,30 +423,26 @@ int main(int argc, char** argv)
                         if(textHelper.isPositiveInteger(holder))
                         {
                             inNum = std::stoi(holder);
-                            Faculty *finder = new Faculty(inNum);
-                            Faculty *result = facultyTree->search(finder);
+                            Faculty *result = searchByFacultyId(inNum,facultyTree);
                             if (result)
                             {
                                 int previousAdvisorId = studentToEdit->getAdvisorId();
                                 studentToEdit->setAdvisorId(result->getId());
                                 result->addAdvisee(studentToEdit->getId());
 
-                                Faculty *previousAdvisor = new Faculty(previousAdvisorId);
-                                facultyTree->search(previousAdvisor)->removeAdvisee(studentToEdit->getId());
+                                searchByFacultyId(previousAdvisorId,facultyTree)->removeAdvisee(studentToEdit->getId());
                                 cout << "Student advisor id sucessfully updated" << endl;
                                 cout << "Updated entry" << endl;
                                 cout << studentToEdit->toString() << endl;
                             }
                             else
                                 cout << "***Faculty with that id number does not exist***" << endl;
-                            delete finder;
                         }
                         else
                             cout << "***Invalid ID entered***"<<endl;
                     }
                     else
                         cout << "***Student with that ID not found***" << endl;
-                    delete temp;
                 }
                 else 
                     cout << "***Invalid ID entered***"<<endl;                
@@ -481,8 +454,7 @@ int main(int argc, char** argv)
                 if(textHelper.isPositiveInteger(holder))
                 {
                     inNum = std::stoi(holder);
-                    Faculty *temp = new Faculty(inNum);
-                    Faculty *facToEdit = facultyTree->search(temp);
+                    Faculty *facToEdit = searchByFacultyId(inNum,facultyTree);
                     if (facToEdit)
                     {
                         cout << "Enter the id number of the student you wish to remove from the faculty's advisee list" << endl;
@@ -490,19 +462,17 @@ int main(int argc, char** argv)
                         if(textHelper.isPositiveInteger(holder))
                         {
                             inNum = std::stoi(holder);
-                            Student *tempStud = new Student(inNum);
-                            Student *result = studentTree->search(tempStud);
+                            Student *result = searchByStudentId(inNum,studentTree);
                             if (result) //student exists
                             {
-                                bool answer = facToEdit->removeAdvisee(tempStud->getId());
+                                bool answer = facToEdit->removeAdvisee(result->getId());
                                 if (answer)
                                 {
-                                    Faculty *tempFac;
-                                    tempFac = facultyTree->getEntryOtherThan(facToEdit);
+                                    Faculty *tempFac = facultyTree->getEntryOtherThan(facToEdit);
                                     if (tempFac)
                                     {
                                         result->setAdvisorId(tempFac->getId());
-                                        tempFac->addAdvisee(tempStud->getId());
+                                        tempFac->addAdvisee(result->getId());
                                         cout << "Advisee successfully removed from list and reassigned to next available faculty." << endl;
                                         cout << "New assigned advisor: \n"
                                              << facultyTree->search(tempFac)->toString() << endl;
@@ -518,14 +488,12 @@ int main(int argc, char** argv)
                             }
                             else
                                 cout << "***Student with that ID number not found***" << endl;
-                            delete tempStud;
                         }  
                         else 
                             cout << "***Invalid ID entered***"<<endl;                      
                     }
                     else
                         cout << "***Faculty member with that ID number not found***" << endl;
-                    delete temp;
                 }
                 else 
                     cout <<"***Invalid Id entered***"<<endl;                
@@ -548,11 +516,9 @@ int main(int argc, char** argv)
                             if (redo)
                             {
                                 studentTree->insert(redo);
-                                Faculty *finder = new Faculty(redo->getAdvisorId());
-                                Faculty *priorAdvisor = facultyTree->search(finder);
+                                Faculty *priorAdvisor = searchByFacultyId(redo->getAdvisorId(),facultyTree);
                                 priorAdvisor->addAdvisee(redo->getId());
                                 cout << "--Student successfully readded to the database--" << endl;
-                                delete finder;
                             }
                             else
                                 cout << "**Error attempting to undo student deletion**" << endl;
@@ -576,14 +542,10 @@ int main(int argc, char** argv)
                             int redoId = std::stoi(lastAction ->data);
                             if (redoId)
                             {
-                                Student *temp = new Student(redoId);
-                                Student *found = studentTree ->search(temp);
-                                Faculty *finder = new Faculty(found ->getAdvisorId());
-                                Faculty *priorAdvisor = facultyTree->search(finder);
+                                Student *found = searchByStudentId(redoId,studentTree);
+                                Faculty *priorAdvisor = searchByFacultyId(found->getAdvisorId(),facultyTree);
                                 priorAdvisor->removeAdvisee(redoId);
-                                studentTree->deleteNode(temp);  
-                                delete temp;
-                                delete finder;
+                                studentTree->deleteNode(found);  
                                 cout << "--Student successfully un-added to the database--" << endl;
                             }
                             else
@@ -591,28 +553,24 @@ int main(int argc, char** argv)
                         }
                         else
                         {
-                            Faculty *redo = new Faculty(std::stoi(lastAction->data));
-                            Faculty *found = facultyTree ->search(redo);
-                            delete redo;
+                            Faculty *found = searchByFacultyId(std::stoi(lastAction->data),facultyTree);
                             if (found)
                             {
                                 int numAdvisees = found ->getAdviseeNumber();
                                 int *advisees = found ->returnAllAdvisees();
-                                Student *temp,*finder;
+                                Student *temp;
                                 Faculty *replacement = facultyTree->getEntryOtherThan(found);
                                 if(replacement)
                                 {
                                     for (int i = 0; i < numAdvisees; ++i)
                                     {
-                                        finder = new Student(advisees[i]);
-                                        temp = studentTree -> search(finder); 
+                                        temp = searchByStudentId(advisees[i],studentTree); 
                                         if (replacement)
                                         {
                                             temp->setAdvisorId(replacement->getId());
                                             replacement->addAdvisee(temp->getId());
                                             found->removeAdvisee(advisees[i]);
                                         }
-                                        delete finder;
                                     }
                                     facultyTree->deleteNode(found);
                                     cout << "--Faculty effectively un-added to the database--" << endl;
@@ -672,4 +630,22 @@ int main(int argc, char** argv)
     delete studentTree;
     delete parser;
     return 0;
+}
+
+
+
+Student* searchByStudentId(int i,ExtendedTree<Student*> *tree)
+{
+    Student *searcher = new Student(i);
+    Student *returner = tree ->search(searcher);
+    delete searcher;
+    return returner;
+
+}
+Faculty* searchByFacultyId(int i, ExtendedTree<Faculty*> *tree)
+{
+    Faculty *searcher = new Faculty(i);
+    Faculty *returner = tree->search(searcher);
+    delete searcher;
+    return returner;
 }
