@@ -92,13 +92,13 @@ int main(int argc, char** argv)
                       "\n12. Remove an advisee from a faculty member given their id"
                       "\n13. Rollback"
                       "\n14. Exit");
-    cout << theMenu <<endl;
     //variables to help with user input
     string holder;
     int inNum;
     GenStack<RollbackRecord*> *rollbackStack = new GenStack<RollbackRecord*>();
     while(true)
     {
+        cout << theMenu << endl;
         cout << "----Enter new command----\nEnter '0' to display options" << endl;
         getline(cin>>ws,holder);
         if(textHelper.isPositiveInteger(holder))//checks to ensure that an option from menu is chosen
@@ -595,30 +595,39 @@ int main(int argc, char** argv)
                             {
                                 //get all their advisees
                                 int numAdvisees = found ->getAdviseeNumber();
-                                int *advisees = found ->returnAllAdvisees();
-                                Student *temp;
-                                //new advisor for all advisees
-                                Faculty *replacement = facultyTree->getEntryOtherThan(found);
-                                //reallocates all students to a new advisor since we will delete theirs
-                                if(replacement)
+                                if(numAdvisees >0)//if the faculty to be deleted has advisees
                                 {
-                                    for (int i = 0; i < numAdvisees; ++i)
+                                    int *advisees = found->returnAllAdvisees();
+                                    Student *temp;
+                                    //new advisor for all advisees
+                                    Faculty *replacement = facultyTree->getEntryOtherThan(found);
+                                    //reallocates all students to a new advisor since we will delete theirs
+                                    if (replacement)
                                     {
-                                        temp = searchByStudentId(advisees[i],studentTree); 
-                                        if (replacement)
+                                        for (int i = 0; i < numAdvisees; ++i)
                                         {
-                                            temp->setAdvisorId(replacement->getId());
-                                            replacement->addAdvisee(temp->getId());
-                                            found->removeAdvisee(advisees[i]);
+                                            temp = searchByStudentId(advisees[i], studentTree);
+                                            if (replacement)
+                                            {
+                                                temp->setAdvisorId(replacement->getId());
+                                                replacement->addAdvisee(temp->getId());
+                                                found->removeAdvisee(advisees[i]);
+                                            }
                                         }
+                                        facultyTree->deleteNode(found);
+                                        cout << "--Faculty effectively un-added to the database--" << endl;
                                     }
-                                    facultyTree->deleteNode(found);
-                                    cout << "--Faculty effectively un-added to the database--" << endl;
+                                    else
+                                    {
+                                        cout << "***No suitable advisors available to take on remaining students, operation aborted***" << endl;
+                                    }
                                 }
-                                else
+                                else 
                                 {
-                                    cout << "***No suitable advisors available to take on remaining students, operation aborted***" << endl;
-                                }                                
+                                    facultyTree->deleteNode(found);
+                                    cout << "--Faculty member un-added to the database--"<<endl;
+                                }  
+                                                                                           
                             }
                             else
                                 cout << "**Error attempting to undo faculty addition**" << endl;
@@ -659,8 +668,6 @@ int main(int argc, char** argv)
                 
                
             }
-            else if (inNum == 0)//used to re display the options
-                cout << theMenu << endl;
         }        
         else //used if no valid commands entered
             cout << "*Invalid command entered*"<<endl;
